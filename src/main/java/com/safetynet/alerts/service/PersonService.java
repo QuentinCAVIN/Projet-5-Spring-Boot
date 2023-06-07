@@ -8,20 +8,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
 @Data
 @Service
-public class FireStationService {
+public class PersonService {
 
-    /*
-http://localhost:8080/firestation
-        Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete avec HTTP :
-        ● ajout d'un mapping caserne/adresse ;
-        ● mettre à jour le numéro de la caserne de pompiers d'une adresse ;
-        ● supprimer le mapping d'une caserne ou d'une adresse.
-        */
+        /*
+http://localhost:8080/person
+Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete avec HTTP :
+● ajouter une nouvelle personne ;
+● mettre à jour une personne existante (pour le moment, supposons que le prénom et le nom de
+famille ne changent pas, mais que les autres champs peuvent être modifiés) ;
+● supprimer une personne (utilisez une combinaison de prénom et de nom comme identificateur
+unique).
+ */
+    //TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
+    // Les methodes ci-dessous ont été recopiées ici a titre d'exemple.
 
-//TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
-// Les methodes ci-dessous sont utilisé par FireStationController.
     @Autowired
     private FireStationRepository fireStationRepository;
 
@@ -29,7 +32,7 @@ http://localhost:8080/firestation
         return fireStationRepository.findById(id);
     }
 
-    public Iterable<FireStation> getFireStations() {
+    public Iterable<FireStation> getFireStation() {
         return fireStationRepository.findAll();
     }
 
@@ -42,3 +45,4 @@ http://localhost:8080/firestation
         return savedFireStation;
     }
 }
+

@@ -1,7 +1,5 @@
 package com.safetynet.alerts.controller;
 
-public class MedicalRecordController {
-}
 /*
 http://localhost:8080/medicalRecord
 Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete HTTP :
@@ -11,3 +9,7 @@ prénom et le nom de famille ne changent pas) ;
 ● supprimer un dossier médical (utilisez une combinaison de prénom et de nom comme
 identificateur unique).
  */
+
+//TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
+public class MedicalRecordController {
+}

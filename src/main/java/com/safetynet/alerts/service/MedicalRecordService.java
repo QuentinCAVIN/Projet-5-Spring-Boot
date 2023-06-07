@@ -8,20 +8,23 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+
 @Data
 @Service
-public class FireStationService {
+public class MedicalRecordService {
 
-    /*
-http://localhost:8080/firestation
-        Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete avec HTTP :
-        ● ajout d'un mapping caserne/adresse ;
-        ● mettre à jour le numéro de la caserne de pompiers d'une adresse ;
-        ● supprimer le mapping d'une caserne ou d'une adresse.
-        */
-
+        /*
+        http://localhost:8080/medicalRecord
+        Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete HTTP :
+        ● ajouter un dossier médical ;
+        ● mettre à jour un dossier médical existant (comme évoqué précédemment, supposer que le
+        prénom et le nom de famille ne changent pas) ;
+        ● supprimer un dossier médical (utilisez une combinaison de prénom et de nom comme
+        identificateur unique).
+         */
 //TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
-// Les methodes ci-dessous sont utilisé par FireStationController.
+// Les methodes ci-dessous ont été recopiées ici a titre d'exemple.
+
     @Autowired
     private FireStationRepository fireStationRepository;
 
@@ -29,7 +32,7 @@ http://localhost:8080/firestation
         return fireStationRepository.findById(id);
     }
 
-    public Iterable<FireStation> getFireStations() {
+    public Iterable<FireStation> getFireStation() {
         return fireStationRepository.findAll();
     }
 
@@ -42,3 +45,4 @@ http://localhost:8080/firestation
         return savedFireStation;
     }
 }
+

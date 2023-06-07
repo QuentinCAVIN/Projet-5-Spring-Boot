@@ -1,7 +1,5 @@
 package com.safetynet.alerts.controller;
 
-public class PersonController {
-}
 /*
 http://localhost:8080/person
 Cet endpoint permettra d’effectuer les actions suivantes via Post/Put/Delete avec HTTP :
@@ -11,3 +9,7 @@ famille ne changent pas, mais que les autres champs peuvent être modifiés) ;
 ● supprimer une personne (utilisez une combinaison de prénom et de nom comme identificateur
 unique).
  */
+
+//TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
+public class PersonController {
+}
