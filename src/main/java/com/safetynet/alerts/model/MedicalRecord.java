@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data //Lombock pour éviter getters et setters
 @Entity
-@Table(name = "firestations")
-public class MedicalRecords {
+@Table(name = "medicalrecords")
+public class MedicalRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

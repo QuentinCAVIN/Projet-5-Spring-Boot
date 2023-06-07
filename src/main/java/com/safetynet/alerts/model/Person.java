@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data //Lombock pour éviter getters et setters
 @Entity
-@Table(name = "firestations")
+@Table(name = "persons")
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
