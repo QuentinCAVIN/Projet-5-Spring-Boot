@@ -1,7 +1,9 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.model.FireStation;
+import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.FireStationRepository;
+import com.safetynet.alerts.repository.PersonRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,25 +26,25 @@ unique).
  */
     //TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
     // Les methodes ci-dessous ont été recopiées ici a titre d'exemple.
-
+/*
     @Autowired
-    private FireStationRepository fireStationRepository;
+    private PersonRepository personRepository;
 
-    public Optional<FireStation> getFireStation(final Long id) {
-        return fireStationRepository.findById(id);
+    public Optional<Person> getPerson(final Long id) {
+        return personRepository.findById(id);
     }
 
-    public Iterable<FireStation> getFireStation() {
-        return fireStationRepository.findAll();
+    public Iterable<Person> getPerson() {
+        return personRepository.findAll();
     }
 
-    public void deleteFireStation(final Long id) {
-        fireStationRepository.deleteById(id);
+    public void deletePerson(final Long id) {
+        personRepository.deleteById(id);
     }
 
-    public FireStation saveFireStation(FireStation fireStation) {
-        FireStation savedFireStation = fireStationRepository.save(fireStation);
-        return savedFireStation;
-    }
+    public Person savePerson(Person person) {
+        Person savedPerson = personRepository.save(person);
+        return savedPerson;
+    }*/
 }
 

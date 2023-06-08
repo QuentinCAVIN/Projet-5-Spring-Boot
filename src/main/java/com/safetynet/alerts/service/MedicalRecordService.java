@@ -24,7 +24,7 @@ public class MedicalRecordService {
          */
 //TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
 // Les methodes ci-dessous ont été recopiées ici a titre d'exemple.
-
+/*
     @Autowired
     private FireStationRepository fireStationRepository;
 
@@ -43,6 +43,7 @@ public class MedicalRecordService {
     public FireStation saveFireStation(FireStation fireStation) {
         FireStation savedFireStation = fireStationRepository.save(fireStation);
         return savedFireStation;
-    }
+
+    }*/
 }
 
