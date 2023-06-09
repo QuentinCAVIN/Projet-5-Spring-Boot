@@ -37,4 +37,7 @@ public class FireStationControllerTest {
         mockMvc.perform(get("/firestations")).andExpect((status().isOk()));
         // la methode perform de mockMvc execute une requête get sur l'URL /firestations
     }
+
+    //@Test
+    //public void create//add_returnsTheSum_ofTwoPositiveIntegers()
 }

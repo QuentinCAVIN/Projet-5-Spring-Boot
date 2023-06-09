@@ -25,8 +25,8 @@ http://localhost:8080/firestation
     @Autowired
     private FireStationRepository fireStationRepository;
 
-    public Optional<FireStation> getFireStation(final Long id) {
-        return fireStationRepository.findById(id);
+    public Optional<FireStation> getFireStation(final String address) {
+        return fireStationRepository.findByAddress(address);
     }
 
     public Iterable<FireStation> getFireStations() {
