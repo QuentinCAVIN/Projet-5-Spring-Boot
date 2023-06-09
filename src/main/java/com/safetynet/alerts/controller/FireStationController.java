@@ -54,7 +54,7 @@ public class FireStationController {
      * Read - Get all firestations
      * @return - An Iterable object of FireStation full filled
      */
-    @GetMapping("/fireStations")
+    @GetMapping("/firestations")
     public Iterable<FireStation> getFireStations() {
         return fireStationService.getFireStations();
     }
@@ -91,7 +91,7 @@ public class FireStationController {
      * Delete - Delete an fire station
      * @param id - The id of the fire station to delete
      */
-    @DeleteMapping("/fireStation/{id}")
+    @DeleteMapping("/firestation/{id}")
     public void deleteFireStation(@PathVariable("id") final Long id) {
         fireStationService.deleteFireStation(id);
     }
