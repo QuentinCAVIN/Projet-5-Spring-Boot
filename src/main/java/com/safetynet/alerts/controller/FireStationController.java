@@ -15,8 +15,6 @@ http://localhost:8080/firestation
         ● supprimer le mapping d'une caserne ou d'une adresse.
         */
 
-//TODO: Les methodes ci-dessous devrait être fonctionelles mais ne respectent pas
-// les consignent du projet (voir ci-dessus)
 @RestController
 public class FireStationController {
 
