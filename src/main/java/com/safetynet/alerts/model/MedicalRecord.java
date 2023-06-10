@@ -2,6 +2,7 @@ package com.safetynet.alerts.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import java.util.List;
 
 @Data //Lombock pour éviter getters et setters
 @Entity
@@ -17,7 +18,7 @@ public class MedicalRecord {
 
     private String birthdate;
 
-    private String medications;
+    private List<String> medications;
 
-    private String allergies;
+    private List<String> allergies;
 }

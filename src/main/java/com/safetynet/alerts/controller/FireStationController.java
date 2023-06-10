@@ -39,7 +39,8 @@ public class FireStationController {
      * @param id The id of the fire station
      * @return An FireStation object full filled
      */
-    @GetMapping("/firestation/{id}")
+    @GetMapping(value="/firestation/{id}",produces = "application/json")// sert a spécifier le format
+    // de sortie. Doit le faire en json par default normalement.
     public FireStation getFireStation(@PathVariable("id") final Long id) {
         Optional<FireStation> fireStation = fireStationService.getFireStation(id);
         if(fireStation.isPresent()) {
