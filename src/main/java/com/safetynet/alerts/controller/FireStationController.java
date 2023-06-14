@@ -3,6 +3,7 @@ package com.safetynet.alerts.controller;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
@@ -45,8 +46,11 @@ public class FireStationController {
      * @param fireStation - The fire station object updated
      * @return
      */
-    @PutMapping("/firestation/{address}")
-    public FireStation updateFireStation(@PathVariable("address") final String address, @RequestBody FireStation fireStation) {
+    @PutMapping("/firestation")
+    public FireStation updateFireStation(@RequestParam("address") final String address, @RequestBody FireStation fireStation) {
+        //RequestParam = les parametres a renseigner dans la partie param, en clé/valeur ou clé = address et valeur = 10 rue de la paix
+        // http://localhost:8080/firestation?address=29 15th St
+        // c'est mieux d'utiliser ce system plutot que d'utiliser /firestation/{address} (sauf pour les ID)
         Optional<FireStation> f = fireStationService.getFireStation(address);
         //Optional<FireStation> est un container qui peut contenir soit un Firestation soit une valeur vide
         if (f.isPresent()) {
@@ -59,7 +63,9 @@ public class FireStationController {
             fireStationService.saveFireStation(currentFireStation);
             return currentFireStation;
         } else {
-            return null;
+            return null; //a vérifier
+            //ResponseEntity objet qui renvoie les codes de retour.
+            //Regarder ça sur https://openclassrooms.com/fr/courses/4668056-construisez-des-microservices/7652183-renvoyez-les-bons-codes-et-filtrez-les-reponses
         }
     }
 

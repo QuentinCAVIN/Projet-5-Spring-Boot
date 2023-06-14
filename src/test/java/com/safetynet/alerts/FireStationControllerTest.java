@@ -4,22 +4,27 @@ package com.safetynet.alerts;
 //ou
 //add_returnsTheSum_ofTwoPositiveIntegers()
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.safetynet.alerts.controller.FireStationController;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
 import com.safetynet.alerts.service.LoadDataService;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.shadow.com.univocity.parsers.common.IterableResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Iterator;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = {FireStationController.class})
@@ -29,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class FireStationControllerTest {
     @Autowired
     private MockMvc mockMvc;
-
     @MockBean //remplis le même role que @Mock
     //Spring configure par default le comportement du Mock, pas besoin de le renseigner ici.
     private FireStationService fireStationService;
@@ -46,14 +50,25 @@ public class FireStationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"address\":\"10 rue de la gare\", \"station\":\"9\" }"))
                 .andExpect((status().isOk()));
+        ;
     }
 
     @Test
     public void updateFireStation_returnFireStationUpdated_whenEndpointIsCall() throws Exception {
-        when(fireStationService.getFireStation(any())).thenReturn(Optional.of(new FireStation())); // Pas besoin de definir le contenu de FireStation? JPA?
-        mockMvc.perform(put("/firestation/{address}", "10 rue de la paix")
-                .contentType(MediaType.APPLICATION_JSON).content("{  \"station\":\"9\" }"))
-                .andExpect((status().isOk()));
+        FireStation fireStation = new FireStation();
+        fireStation.setStation(9);
+        fireStation.setAddress("10 rue de la paix");
+        when(fireStationService.getFireStation(any())).thenReturn(Optional.of(fireStation));// c'est un Wrap?
+        mockMvc.perform(put("/firestation").param("address","10 rue de la paix")
+                        // param pour répondre à @RequestParam("address")
+                .contentType(MediaType.APPLICATION_JSON).content( "{\"station\":\"6\" }"))
+                .andExpect((status().isOk()))
+                .andExpect(jsonPath("$").value(fireStation));
+                //Body = {"id":0,"address":"8 rue de la paix","station":6}
+                //pourquoi le 8 rue de la paix est mis à jour? la requete porte sur le 10
+                //
+
+        //.andExpect(jsonPath("address", is("10 rue de la paix")));//Stop ici essayer de comprendre pourquoi ça marche pas (erreur 400)
     }
 
     @Test
@@ -65,6 +80,17 @@ public class FireStationControllerTest {
     public void getFireStations_sendsRequestSuccessfully_whenEndpointIsCall() throws Exception {
         mockMvc.perform(get("/firestations")).andExpect((status().isOk()));
         // la methode perform de mockMvc execute une requete get sur l'URL /firestations
+    }
+
+    //Voir si utile (pas sûr)
+    public static String asJsonString(final Object obj) {
+        //Methode utilisé pour convertir (= serialiser) des objets java en fichier json.
+        //On utilise la classe ObjectMapper de Jackson pour ça.
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     //@Test
