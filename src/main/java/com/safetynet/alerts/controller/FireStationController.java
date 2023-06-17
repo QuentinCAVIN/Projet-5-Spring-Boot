@@ -2,10 +2,14 @@ package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 
 /*
@@ -31,10 +35,23 @@ public class FireStationController {
      * @return The fire station object saved
      */
     @PostMapping("/firestation")
-    public FireStation createFireStation(@RequestBody FireStation fireStation) {
+    public ResponseEntity<FireStation> createFireStation(@Valid @RequestBody FireStation fireStation) {
         //RequestBody va servir a Spring pour convertir
         // le resultat de la requete http en objet Java Firestation
-        return fireStationService.saveFireStation(fireStation);
+
+        FireStation fireStationAdded = fireStationService.saveFireStation(fireStation);
+        if (Objects.isNull(fireStationAdded)) {
+            return ResponseEntity.noContent().build();// Je ne comprends pas cette condition
+            // qui ne peut pas être atteinte. (si firestation null alors code 400, on n'entre pas dans la methode)
+            //De plus si l'objet Firestation est null, le code 204 ne me semble pas approprié.
+        }
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{Address}")
+                .buildAndExpand(fireStationAdded.getAddress())
+                .toUri();
+        return ResponseEntity.created(location).build(); // remplacer par noContent?
+        // Pour pouvoir utiliser created , il faut avoir un endpoint get? pas demandé dans le projet.
     }
 
     //● mettre à jour le numéro de la caserne de pompiers d'une adresse

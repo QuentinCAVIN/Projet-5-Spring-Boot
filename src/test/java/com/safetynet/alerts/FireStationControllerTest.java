@@ -41,32 +41,51 @@ public class FireStationControllerTest {
     private LoadDataService loadDataService;
     //Je ne comprends pas pourquoi le Mock est obligatoire ici, vu que FireStationController
     //n'utilise pas LoadataService.
+    String addressTest = "10 rue de la gare";
+
 
     //TODO : finaliser les test pour qu'ils répondent aux exigences définis.
 
     @Test
-    public void createFireStation_returnFireStationCreated_whenEndpointIsCall() throws Exception {
+
+    public void createFireStation_returnCode201_whenEndpointIsCall() throws Exception {
+        FireStation fireStation = new FireStation();
+        fireStation.setStation(9);
+        fireStation.setAddress(addressTest);// a factoriser dans un BeforeEach
+        when(fireStationService.saveFireStation(any())).thenReturn(fireStation);
         mockMvc.perform(post("/firestation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"address\":\"10 rue de la gare\", \"station\":\"9\" }"))
-                .andExpect((status().isOk()));
+                .andExpect((status().isCreated()));
         ;
+    }
+
+    @Test
+    public void createFireStation_returnCode400_whenFirestationAttributIsNull() throws Exception {
+        FireStation fireStation = new FireStation();
+        fireStation.setAddress(addressTest);// a factoriser dans un BeforeEach
+        when(fireStationService.saveFireStation(any())).thenReturn(fireStation);
+        mockMvc.perform(post("/firestation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"station\":\"9\" }"))
+                .andExpect((status().isBadRequest()));
     }
 
     @Test
     public void updateFireStation_returnFireStationUpdated_whenEndpointIsCall() throws Exception {
         FireStation fireStation = new FireStation();
         fireStation.setStation(9);
-        fireStation.setAddress("10 rue de la paix");
-        when(fireStationService.getFireStation(any())).thenReturn(Optional.of(fireStation));// c'est un Wrap?
-        mockMvc.perform(put("/firestation").param("address","10 rue de la paix")
+        fireStation.setAddress(addressTest);
+        when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));// c'est un Wrap?
+        // ci-dessus a mettre dans un BeforeEach
+        mockMvc.perform(put("/firestation").param("address", addressTest)
                         // param pour répondre à @RequestParam("address")
-                .contentType(MediaType.APPLICATION_JSON).content( "{\"station\":\"6\" }"))
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"station\":\"6\" }"))
                 .andExpect((status().isOk()))
                 .andExpect(jsonPath("$").value(fireStation));
-                //Body = {"id":0,"address":"8 rue de la paix","station":6}
-                //pourquoi le 8 rue de la paix est mis à jour? la requete porte sur le 10
-                //
+        //Body = {"id":0,"address":"8 rue de la paix","station":6}
+        //pourquoi le 8 rue de la paix est mis à jour? la requete porte sur le 10
+        //
 
         //.andExpect(jsonPath("address", is("10 rue de la paix")));//Stop ici essayer de comprendre pourquoi ça marche pas (erreur 400)
     }
