@@ -1,9 +1,12 @@
 package com.safetynet.alerts.controller;
 
+import com.safetynet.alerts.exceptions.FireStationNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -45,13 +48,16 @@ public class FireStationController {
             // qui ne peut pas être atteinte. (si firestation null alors code 400, on n'entre pas dans la methode)
             //De plus si l'objet Firestation est null, le code 204 ne me semble pas approprié.
         }
-        URI location = ServletUriComponentsBuilder
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+        /*URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{Address}")
                 .buildAndExpand(fireStationAdded.getAddress())
                 .toUri();
-        return ResponseEntity.created(location).build(); // remplacer par noContent?
-        // Pour pouvoir utiliser created , il faut avoir un endpoint get? pas demandé dans le projet.
+        return ResponseEntity.created(location).build(); remplacer par noContent?
+        // Pour pouvoir utiliser created , il faut avoir un endpoint get? pas demandé dans le projet.*/
+
+        //TODO: Ajouter un code 409 conflit apres avoir eu le detail du fonctionnement de cette partie
     }
 
     //● mettre à jour le numéro de la caserne de pompiers d'une adresse
@@ -65,7 +71,7 @@ public class FireStationController {
      */
     @PutMapping("/firestation")
     public FireStation updateFireStation(@RequestParam("address") final String address, @RequestBody FireStation fireStation) {
-        //RequestParam = les parametres a renseigner dans la partie param, en clé/valeur ou clé = address et valeur = 10 rue de la paix
+        //RequestParam = les parametres a renseigner dans la partie param, en clé/valeur ou clé = "address" et valeur = "10 rue de la paix"
         // http://localhost:8080/firestation?address=29 15th St
         // c'est mieux d'utiliser ce system plutot que d'utiliser /firestation/{address} (sauf pour les ID)
         Optional<FireStation> f = fireStationService.getFireStation(address);
@@ -80,10 +86,10 @@ public class FireStationController {
             fireStationService.saveFireStation(currentFireStation);
             return currentFireStation;
         } else {
-            return null; //a vérifier
-            //ResponseEntity objet qui renvoie les codes de retour.
-            //Regarder ça sur https://openclassrooms.com/fr/courses/4668056-construisez-des-microservices/7652183-renvoyez-les-bons-codes-et-filtrez-les-reponses
+            throw new FireStationNotFoundException("La Caserne de pompier avec l'address " + address + " est introuvable.");
+            // le message s'affiche uniquement dans le terminal? comment remédier à ça pour qu'un message apparaisse dans le body de la requete?
         }
+            //ResponseEntity objet qui renvoie les codes de retour.
     }
 
     //● supprimer le mapping d'une caserne ou d'une adresse.
@@ -93,26 +99,26 @@ public class FireStationController {
     /**
      * Delete - Delete a fire station
      *
-     * @param id - The id of the fire station to delete
+     * @param address - The address of the fire station to delete
      */
-    @DeleteMapping("/firestation/{id}")
-    public void deleteFireStation(@PathVariable("id") final Long id) {
-        fireStationService.deleteFireStation(id);
+    @Transactional// sans ça, code 500. A comprendre
+    @DeleteMapping("/firestation")
+    public ResponseEntity deleteFireStation(@RequestParam("address") final String address) {
+        Optional <FireStation> f = fireStationService.getFireStation(address);
+        if (f.isPresent()) {
+            fireStationService.deleteFireStation(address);
+            return ResponseEntity.noContent().build();
+        } else{
+            throw new FireStationNotFoundException ("La Caserne de pompier avec l'address " + address + " est introuvable.");
+        }
     }
 
-    //● utile à l'enregistrement du fichier json en BDD au démarrage de l'application.
-
-    /**
-     * Read - Get all firestations
-     *
-     * @return - An Iterable object of FireStation full filled
-     */
-    @GetMapping("/firestations")
+    @GetMapping("/firestations") //pour les tests, a supprimer plus tard
     public Iterable<FireStation> getFireStations() {
         return fireStationService.getFireStations();
     }
 
-    // Au cas ou...
+    /* Pas demandé mais au cas ou...
     /**
      * Read - Get one fire station
      * @param address The address of the fire station

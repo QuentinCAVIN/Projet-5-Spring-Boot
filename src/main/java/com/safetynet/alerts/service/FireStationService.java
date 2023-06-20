@@ -36,6 +36,7 @@ http://localhost:8080/firestation
     public void deleteFireStation(final Long id) {
         fireStationRepository.deleteById(id);
     }
+    public void deleteFireStation(final String address) {fireStationRepository.deleteByAddress(address);}
 
     public FireStation saveFireStation(FireStation fireStation) {
         FireStation savedFireStation = fireStationRepository.save(fireStation);
