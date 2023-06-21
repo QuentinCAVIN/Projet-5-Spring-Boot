@@ -25,6 +25,6 @@ public class FireStationIT {
 
     @Test
     public void testPostFirestation() throws Exception {
-        mockMvc.perform(post("/firestation")).andExpect((status().isOk()));
+        mockMvc.perform(post("/firestation")).andExpect((status().isBadRequest()));
     }
 }

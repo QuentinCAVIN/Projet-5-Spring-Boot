@@ -41,10 +41,20 @@ public class FireStationController {
     public ResponseEntity<FireStation> createFireStation(@Valid @RequestBody FireStation fireStation) {
         //RequestBody va servir a Spring pour convertir
         // le resultat de la requete http en objet Java Firestation
+        Optional<FireStation> firestationAlreadyPresent = fireStationService.getFireStation(fireStation.getAddress());
+        String addressAlreadyPresent = firestationAlreadyPresent.map(FireStation::getAddress).orElse(null);
+        //cette ligne de code extrait l'adresse (String) de l'objet FireStation contenu dans l'Optional<FireStation>,
+        // en utilisant la méthode de référence FireStation::getAddress. Si l'Optional est vide, la valeur null sera renvoyée.
+        if (addressAlreadyPresent != null){
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
 
         FireStation fireStationAdded = fireStationService.saveFireStation(fireStation);
+
         if (Objects.isNull(fireStationAdded)) {
-            return ResponseEntity.noContent().build();// Je ne comprends pas cette condition
+            //TODO: à virer apres la prochaine session de mentorat
+            return ResponseEntity.noContent().build();
+            // Récopéré dans le cours OCR. Je ne comprends pas cette condition
             // qui ne peut pas être atteinte. (si firestation null alors code 400, on n'entre pas dans la methode)
             //De plus si l'objet Firestation est null, le code 204 ne me semble pas approprié.
         }
@@ -54,10 +64,10 @@ public class FireStationController {
                 .path("/{Address}")
                 .buildAndExpand(fireStationAdded.getAddress())
                 .toUri();
-        return ResponseEntity.created(location).build(); remplacer par noContent?
+        return ResponseEntity.created(location).build(); //remplacer par noContent?
+        Ci-dessus, sert a créer un header, je juge ça inutile ici car ça va renvoyer l'adresse de l'objet créé, qui ne pourra
+        pas être récupéré vu que je n'ai pas implémenté de méthode get.
         // Pour pouvoir utiliser created , il faut avoir un endpoint get? pas demandé dans le projet.*/
-
-        //TODO: Ajouter un code 409 conflit apres avoir eu le detail du fonctionnement de cette partie
     }
 
     //● mettre à jour le numéro de la caserne de pompiers d'une adresse
@@ -110,6 +120,12 @@ public class FireStationController {
             return ResponseEntity.noContent().build();
         } else{
             throw new FireStationNotFoundException ("La Caserne de pompier avec l'address " + address + " est introuvable.");
+
+            //FireStationNotFoundException notFoundException = new FireStationNotFoundException("La Caserne de pompier avec l'address " + address + " est introuvable.");
+            //return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundException);
+
+            //La premier expression ne retourne rien dans le body contrairement a ce qui est expliqué dans le cours.
+            //La seconde renvoie tout la stack.
         }
     }
 

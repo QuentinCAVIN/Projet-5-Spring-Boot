@@ -17,6 +17,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -41,6 +42,7 @@ public class FireStationControllerTest {
     private LoadDataService loadDataService;
     //Je ne comprends pas pourquoi le Mock est obligatoire ici, vu que FireStationController
     //n'utilise pas LoadataService.
+    //TODO: Trouver un moyen de corriger ça.
     String addressTest = "10 rue de la gare";
 
 
@@ -48,7 +50,7 @@ public class FireStationControllerTest {
 
     @Test
 
-    public void createFireStation_returnCode201_whenEndpointIsCall() throws Exception {
+    public void createFireStation_returnCode201_whenFireStationIsCreated() throws Exception {
         FireStation fireStation = new FireStation();
         fireStation.setStation(9);
         fireStation.setAddress(addressTest);// a factoriser dans un BeforeEach
@@ -61,7 +63,7 @@ public class FireStationControllerTest {
     }
 
     @Test
-    public void createFireStation_returnCode400_whenFirestationAttributIsNull() throws Exception {
+    public void createFireStation_returnCode400_whenAFirestationAttributIsNull() throws Exception {
         FireStation fireStation = new FireStation();
         fireStation.setAddress(addressTest);// a factoriser dans un BeforeEach
         when(fireStationService.saveFireStation(any())).thenReturn(fireStation);
@@ -72,7 +74,18 @@ public class FireStationControllerTest {
     }
 
     @Test
-    public void updateFireStation_returnFireStationUpdated_whenEndpointIsCall() throws Exception {
+    public void createFirestation_returnCode409_whenTheFireStationAddedIsAlreadyCreated() throws Exception{
+        FireStation fireStation = new FireStation();
+        fireStation.setAddress(addressTest);
+        when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));
+        mockMvc.perform(post("/firestation")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{ \"address\":\"10 rue de la gare\", \"station\":\"9\" }"))
+                .andExpect((status().isConflict()));
+    }
+
+    @Test
+    public void updateFireStation_returnCode200_whenAFireStationIsModified() throws Exception {
         FireStation fireStation = new FireStation();
         fireStation.setStation(9);
         fireStation.setAddress(addressTest);
@@ -83,22 +96,36 @@ public class FireStationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"station\":\"6\" }"))
                 .andExpect((status().isOk()))
                 .andExpect(jsonPath("$").value(fireStation));
-        //Body = {"id":0,"address":"8 rue de la paix","station":6}
-        //pourquoi le 8 rue de la paix est mis à jour? la requete porte sur le 10
-        //
-
-        //.andExpect(jsonPath("address", is("10 rue de la paix")));//Stop ici essayer de comprendre pourquoi ça marche pas (erreur 400)
     }
 
     @Test
-    public void deleteFireStations_sendsRequestSuccessfully_whenEndpointIsCall() throws Exception {
-        mockMvc.perform(delete("/firestation/1")).andExpect((status().isOk()));
+    public void updateFireStation_returnCode400_whenAWrongStationArgumentIsEnter() throws Exception {
+        FireStation fireStation = new FireStation();
+        fireStation.setStation(9);
+        fireStation.setAddress(addressTest);
+        when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));
+        mockMvc.perform(put("/firestation").param("address",addressTest)
+                        // param pour répondre à @RequestParam("address")
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"station\":\"Wrong station argument\" }"))
+                .andExpect((status().isBadRequest()));
     }
 
     @Test
-    public void getFireStations_sendsRequestSuccessfully_whenEndpointIsCall() throws Exception {
-        mockMvc.perform(get("/firestations")).andExpect((status().isOk()));
-        // la methode perform de mockMvc execute une requete get sur l'URL /firestations
+    public void updateFireStation_returnCode404_whenAWrongAddressIsEnter() throws Exception {
+        mockMvc.perform(put("/firestation").param("address","Wrong addresse")
+                        // param pour répondre à @RequestParam("address")
+                        .contentType(MediaType.APPLICATION_JSON).content("{\"station\":\"6\" }"))
+                .andExpect((status().isNotFound()));
+    }
+
+    @Test
+    public void deleteFireStations_returnCode204_whenAFireStationIsDelete() throws Exception {
+        FireStation fireStation = new FireStation();
+        fireStation.setStation(9);
+        fireStation.setAddress(addressTest);
+        when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));
+        mockMvc.perform(delete("/firestation").param("address",addressTest))
+                .andExpect((status().isNoContent()));
     }
 
     //Voir si utile (pas sûr)
