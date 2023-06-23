@@ -1,7 +1,9 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.model.FireStation;
+import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.FireStationRepository;
+import com.safetynet.alerts.repository.MedicalRecordRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,26 +26,27 @@ public class MedicalRecordService {
          */
 //TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
 // Les methodes ci-dessous ont été recopiées ici a titre d'exemple.
-/*
+
     @Autowired
-    private FireStationRepository fireStationRepository;
+    private MedicalRecordRepository medicalRecordRepository;
 
-    public Optional<FireStation> getFireStation(final Long id) {
-        return fireStationRepository.findById(id);
+    public Optional<MedicalRecord> getMedicalRecord(final Long id) {
+        return medicalRecordRepository.findById(id);
+    }
+    public Optional<MedicalRecord> getMedicalRecord(String firstName, String lastName) {
+       return medicalRecordRepository.findByFirstNameAndLastName(firstName,lastName);
+    }
+    public Iterable<MedicalRecord> getMedicalRecord() {
+        return medicalRecordRepository.findAll();
     }
 
-    public Iterable<FireStation> getFireStation() {
-        return fireStationRepository.findAll();
+    public void deleteMedicalRecord(final Long id) {
+        medicalRecordRepository.deleteById(id);
     }
 
-    public void deleteFireStation(final Long id) {
-        fireStationRepository.deleteById(id);
+    public MedicalRecord saveMedicalRecord(MedicalRecord medicalRecord) {
+        MedicalRecord savedMedicalRecord = medicalRecordRepository.save(medicalRecord);
+        return savedMedicalRecord;
     }
-
-    public FireStation saveFireStation(FireStation fireStation) {
-        FireStation savedFireStation = fireStationRepository.save(fireStation);
-        return savedFireStation;
-
-    }*/
 }
 

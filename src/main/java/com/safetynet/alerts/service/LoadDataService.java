@@ -6,7 +6,7 @@ import com.safetynet.alerts.model.InputData;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.FireStationRepository;
-import com.safetynet.alerts.repository.MedicalRecordsRepository;
+import com.safetynet.alerts.repository.MedicalRecordRepository;
 import com.safetynet.alerts.repository.PersonRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ public class LoadDataService {
     @Autowired
     private FireStationRepository fireStationRepository;
     @Autowired
-    private MedicalRecordsRepository medicalRecordsRepository;
+    private MedicalRecordRepository medicalRecordRepository;
     @Autowired
     private PersonRepository personRepository;
 
@@ -40,7 +40,7 @@ public class LoadDataService {
             fireStationRepository.saveAll(fireStations);
 
             List<MedicalRecord> medicalRecords = data.getMedicalrecords();
-            medicalRecordsRepository.saveAll(medicalRecords);
+            medicalRecordRepository.saveAll(medicalRecords);
 
             List<Person> persons = data.getPersons();
             personRepository.saveAll(persons);

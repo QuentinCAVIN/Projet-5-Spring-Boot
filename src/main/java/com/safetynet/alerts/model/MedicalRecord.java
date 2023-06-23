@@ -1,6 +1,7 @@
 package com.safetynet.alerts.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import java.util.List;
 
@@ -11,9 +12,9 @@ public class MedicalRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-
+    @NotBlank
     private String firstName;
-
+    @NotBlank
     private String lastName;
 
     private String birthdate;
