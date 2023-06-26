@@ -1,6 +1,7 @@
 package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.exceptions.FireStationNotFoundException;
+import com.safetynet.alerts.exceptions.FireStationNotValidException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
 import jakarta.transaction.Transactional;
@@ -38,7 +39,7 @@ public class FireStationController {
      * @return The fire station object saved
      */
     @PostMapping("/firestation")
-    public ResponseEntity<FireStation> createFireStation(@Valid @RequestBody FireStation fireStation) {
+    public ResponseEntity createFireStation(@Valid @RequestBody FireStation fireStation) throws FireStationNotFoundException{
         //RequestBody va servir a Spring pour convertir
         // le resultat de la requete http en objet Java Firestation
         Optional<FireStation> firestationAlreadyPresent = fireStationService.getFireStation(fireStation.getAddress());
@@ -51,23 +52,8 @@ public class FireStationController {
 
         FireStation fireStationAdded = fireStationService.saveFireStation(fireStation);
 
-        if (Objects.isNull(fireStationAdded)) {
-            //TODO: à virer apres la prochaine session de mentorat
-            return ResponseEntity.noContent().build();
-            // Récopéré dans le cours OCR. Je ne comprends pas cette condition
-            // qui ne peut pas être atteinte. (si firestation null alors code 400, on n'entre pas dans la methode)
-            //De plus si l'objet Firestation est null, le code 204 ne me semble pas approprié.
-        }
+        //return new ResponseEntity<> ("La caserne" + fireStationAdded + "est créé ",HttpStatus.CREATED);
         return ResponseEntity.status(HttpStatus.CREATED).build();
-        /*URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{Address}")
-                .buildAndExpand(fireStationAdded.getAddress())
-                .toUri();
-        return ResponseEntity.created(location).build(); //remplacer par noContent?
-        Ci-dessus, sert a créer un header, je juge ça inutile ici car ça va renvoyer l'adresse de l'objet créé, qui ne pourra
-        pas être récupéré vu que je n'ai pas implémenté de méthode get.
-        // Pour pouvoir utiliser created , il faut avoir un endpoint get? pas demandé dans le projet.*/
     }
 
     //● mettre à jour le numéro de la caserne de pompiers d'une adresse
@@ -96,7 +82,7 @@ public class FireStationController {
             fireStationService.saveFireStation(currentFireStation);
             return currentFireStation;
         } else {
-            throw new FireStationNotFoundException("La Caserne de pompier avec l'address " + address + " est introuvable.");
+            throw new FireStationNotFoundException("Le centre de secours avec l'address " + address + " est introuvable.");
             // le message s'affiche uniquement dans le terminal? comment remédier à ça pour qu'un message apparaisse dans le body de la requete?
         }
             //ResponseEntity objet qui renvoie les codes de retour.
@@ -117,7 +103,10 @@ public class FireStationController {
         Optional <FireStation> f = fireStationService.getFireStation(address);
         if (f.isPresent()) {
             fireStationService.deleteFireStation(address);
-            return ResponseEntity.noContent().build();
+            return new ResponseEntity<>(
+                    HttpStatus.OK);
+                    //Pour le verbe DELETE vaut il mieux retourner un code 204 ou un code 200
+                    //avec un message personalisé de confirmation de suppression?
         } else{
             throw new FireStationNotFoundException ("La Caserne de pompier avec l'address " + address + " est introuvable.");
 
