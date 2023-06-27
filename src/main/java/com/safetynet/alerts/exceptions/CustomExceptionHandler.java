@@ -1,5 +1,6 @@
 package com.safetynet.alerts.exceptions;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +12,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -22,41 +27,47 @@ public class CustomExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(CustomExceptionHandler.class);
 
     @ExceptionHandler(FireStationNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleFireStationNotFoundException(FireStationNotFoundException exception, HttpServletRequest request) {
         logger.error(exception.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(LocalDateTime.now());
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
         errorResponse.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
         errorResponse.setMessage(exception.getMessage());
         errorResponse.setPath(request.getRequestURI());
-        // J'ai choisis Les attribut de ErrorResponse pour coller à ceux qui était généré automatiquement par Spring
+        // J'ai choisis Les attribut de ErrorResponse pour coller à ceux qui était généré automatiquement par Spring. A confirmer
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleInvalidArgument(MethodArgumentNotValidException exception, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleArgumentNotValid(MethodArgumentNotValidException exception, HttpServletRequest request) {
         Map<String, String> map = new HashMap<>();
-        exception.getBindingResult().getFieldErrors().forEach(fieldError -> { // ça regroupe toute les erreur dans une map?
+        exception.getBindingResult().getFieldErrors().forEach(fieldError -> {
             map.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
-        //TODO Essayer de piger l'expression lambda ci dessus
+        //TODO Décomposer l'expression lambda ci-dessus
 
         ErrorResponse errorResponse = new ErrorResponse();
-        errorResponse.setTimestamp(LocalDateTime.now());
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponse.setMessages(map);
+        errorResponse.setMessage(map.toString());
         errorResponse.setPath(request.getRequestURI());
 
-        //TODO: implémenter de quoi stocker la map dans un String + supprimer le
-        // champ message de ErrorResponse ajouté pour l'occasion
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class) // Impossible a atteindre à cause du probléme de désérialisation
+    // TODO : Pas sur que ce soit la bonne exception, à vérifier
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException exception,HttpServletRequest request) {
+        String error = exception.getName() + " Devrait être du type" + exception.getRequiredType().getName();
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        errorResponse.setMessage(error);
+        errorResponse.setPath(request.getRequestURI());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
@@ -85,8 +96,8 @@ public class CustomExceptionHandler {
 
     MAIS!:
     Ce serait mieux d'utiliser une classe (CustomExceptionHandler) pour centraliser la gestion des exceptions.
-    //TODO : essayer de générer les messages des @notBlank de FireStation sans passer
-        par CustomException pour voir la différence. Pourquoi le resultat du body doit être paramétré manuellement dans un cas et pas dans l'autre?
+    //TODO : essayer de générer les messages des @NotBlank de FireStation sans passer
+        par CustomException pour voir la différence. Pourquoi le resultat du body doit être paramétré manuellement dans le cas d'utilisation de CustomExceptionHandler et pas dans l'utilisation direct de FiresationNotFoundException?
 
         https://auth0.com/blog/get-started-with-custom-error-handling-in-spring-boot-java/
         https://medium.com/nerd-for-tech/how-to-handle-custom-exceptions-in-spring-boot-6673047b1dc7

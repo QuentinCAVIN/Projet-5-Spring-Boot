@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -25,6 +26,6 @@ public class FireStationIT {
 
     @Test
     public void testPostFirestation() throws Exception {
-        mockMvc.perform(post("/firestation")).andExpect((status().isBadRequest()));
+        mockMvc.perform(post("/firestation").contentType(MediaType.APPLICATION_JSON).content("{\"address\":\"10\",\"station\":\"cinq\"}")).andExpect((status().isOk()));
     }
 }
