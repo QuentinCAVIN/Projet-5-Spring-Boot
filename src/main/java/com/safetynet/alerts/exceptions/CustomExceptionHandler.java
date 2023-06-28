@@ -1,24 +1,14 @@
 package com.safetynet.alerts.exceptions;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
-
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestControllerAdvice
@@ -33,43 +23,45 @@ public class CustomExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.NOT_FOUND.value());
         errorResponse.setError(HttpStatus.NOT_FOUND.getReasonPhrase());
-        errorResponse.setMessage(exception.getMessage());
+        errorResponse.setErrorMessage(exception.getMessage());
         errorResponse.setPath(request.getRequestURI());
         // J'ai choisis Les attribut de ErrorResponse pour coller à ceux qui était généré automatiquement par Spring. A confirmer
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleArgumentNotValid(MethodArgumentNotValidException exception, HttpServletRequest request) {
+        logger.error(exception.getMessage());
+
         Map<String, String> map = new HashMap<>();
         exception.getBindingResult().getFieldErrors().forEach(fieldError -> {
             map.put(fieldError.getField(), fieldError.getDefaultMessage());
         });
-        //TODO Décomposer l'expression lambda ci-dessus
+        //TODO Détailler l'expression lambda ci-dessus ( met tout les erreurs dans une map "address = erreur associée")
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponse.setMessage(map.toString());
+        errorResponse.setErrorMessage(map.toString());
         errorResponse.setPath(request.getRequestURI());
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(MethodArgumentTypeMismatchException.class) // Impossible a atteindre à cause du probléme de désérialisation
-    // TODO : Pas sur que ce soit la bonne exception, à vérifier
-    public ResponseEntity<ErrorResponse> handleTypeMismatch(MethodArgumentTypeMismatchException exception,HttpServletRequest request) {
-        String error = exception.getName() + " Devrait être du type" + exception.getRequiredType().getName();
+    @ExceptionHandler(FireStationAlreadyPresentException.class)
+    public ResponseEntity<ErrorResponse> handleFireStationAlreadyPresentException(FireStationAlreadyPresentException exception, HttpServletRequest request) {
+        logger.error(exception.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse();
         errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
         errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
-        errorResponse.setMessage(error);
+        errorResponse.setErrorMessage(exception.getMessage());
         errorResponse.setPath(request.getRequestURI());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
+
 
     /*
     Problème rencontré sur les throws :
