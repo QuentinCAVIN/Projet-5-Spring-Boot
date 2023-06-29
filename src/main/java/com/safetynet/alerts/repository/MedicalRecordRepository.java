@@ -12,4 +12,6 @@ public interface MedicalRecordRepository extends CrudRepository<MedicalRecord, L
     Optional<MedicalRecord> findByFirstNameAndLastName(String firstName,String lastName);
     //Et oui ça marche! "And" est un mot clé JPA ("Or" aussi).
 
+   void deleteByFirstNameAndLastName(String firstName,String lastName);
+
 }
