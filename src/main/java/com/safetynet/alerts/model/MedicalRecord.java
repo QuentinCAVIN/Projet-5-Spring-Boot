@@ -12,9 +12,9 @@ public class MedicalRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @NotBlank
+    @NotBlank(message = "Obligatoire pour créer un nouveau dossier médical.")
     private String firstName;
-    @NotBlank
+    @NotBlank(message = "Obligatoire pour créer un nouveau dossier médical.")
     private String lastName;
 
     private String birthdate;

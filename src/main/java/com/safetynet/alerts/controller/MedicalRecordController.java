@@ -1,5 +1,7 @@
 package com.safetynet.alerts.controller;
 
+import com.safetynet.alerts.exceptions.AlreadyPresentException;
+import com.safetynet.alerts.exceptions.NotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.MedicalRecordService;
@@ -35,7 +37,7 @@ public class MedicalRecordController {
 
         Optional<MedicalRecord> medicalRecordAlreadyPresent = medicalRecordService.getMedicalRecord(medicalRecord.getFirstName(), medicalRecord.getLastName());
         if (Optional.of(medicalRecordAlreadyPresent).orElse(null).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            throw new AlreadyPresentException("Il y a déja un dossier médical associé à ce nom: \""+ medicalRecordAlreadyPresent.orElse(null) +"\"");
         }
         medicalRecordService.saveMedicalRecord(medicalRecord);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -67,9 +69,8 @@ public class MedicalRecordController {
             medicalRecordService.saveMedicalRecord(currentMedicalRecord);
             return ResponseEntity.status(HttpStatus.OK).body(currentMedicalRecord);
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            // TODO : implémenter la gestion d'exception
-            //throw new  FireStationNotFoundException("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");
+
+            throw new NotFoundException("Il n'y a pas de dossier médical associé à " + firstName + " " + lastName + ".");
         }
     }
 
@@ -83,8 +84,7 @@ public class MedicalRecordController {
             medicalRecordService.deleteMedicalRecord(firstName,lastName);
             return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build(); //TODO: Temporaire en attendant d'implémenter la gestion de l'exception
-            /*throw new FireStationNotFoundException ("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");*/
+            throw new NotFoundException ("Il n'y a pas de dossier médical associé à " + firstName + " " + lastName + ".");
         }
     }
 }

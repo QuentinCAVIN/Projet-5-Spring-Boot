@@ -1,31 +1,19 @@
 package com.safetynet.alerts;
 
 import com.safetynet.alerts.controller.MedicalRecordController;
-import com.safetynet.alerts.model.FireStation;
-import com.safetynet.alerts.model.MedicalRecord;
-import com.safetynet.alerts.repository.MedicalRecordRepository;
+import com.safetynet.alerts.model.MedicalRecord;;
 import com.safetynet.alerts.service.LoadDataService;
 import com.safetynet.alerts.service.MedicalRecordService;
-import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.internal.hamcrest.HamcrestArgumentMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.MultiValueMapAdapter;
-
 import java.util.*;
 
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -46,6 +34,7 @@ public class MedicalRecordControllerTest {
     private List<String> medications = Arrays.asList("Kill people");
     private List<String> allergies= Arrays.asList("Geth","Peace");
 
+    // TODO : Ajuster les attributs et le BeforeEach de la classe, beaucoups de champs inutile
     @BeforeEach
     public void setUpPerTest(){
         medicalRecord = new MedicalRecord();
@@ -55,6 +44,7 @@ public class MedicalRecordControllerTest {
         medicalRecord.setMedications(medications);
         medicalRecord.setAllergies(allergies);
     }
+
     @Test
     public void createMedicalRecord_returnCode201_whenMedicalRecordIsCreated() throws Exception{
         mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
@@ -66,15 +56,19 @@ public class MedicalRecordControllerTest {
     public void createMedicalRecord_returnCode400_WhenLastNameIsMissing() throws Exception{
         mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"firstName\":\"" + firstName + "\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("{lastName=Obligatoire pour créer un nouveau dossier médical.}"));
     }
+
     @Test
     public void createMedicalRecord_returnCode409_WhenAMedicalRecordAlreadyExist() throws Exception{
 
         when(medicalRecordService.getMedicalRecord(firstName,lastName)).thenReturn(Optional.of(medicalRecord));
         mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}"))
-                .andExpect(status().isConflict());
+                .andExpect(status().isConflict()) .andExpect(jsonPath("$.errorMessage")
+                        .value("Il y a déja un dossier médical associé à ce nom: \"" + medicalRecord + "\""));;
     }
 
     @Test
@@ -91,15 +85,16 @@ public class MedicalRecordControllerTest {
         // Matchers de Hamcrest résout le probléme en partie mais pas possible d'utiliser la liste
         //https://hamcrest.org/JavaHamcrest/javadoc/1.3/org/hamcrest/Matchers.html
     }
+
     @Test
     public void updateMedicalRecord_returnCode400_whenFirstNameIsMissing() throws Exception {
         medications = Arrays.asList("\"Normandy\"","\"Shepard\"");
-        mockMvc.perform(put("/medicalRecord").param("firstName",firstName)
+        mockMvc.perform(put("/medicalRecord").param("lastName",lastName)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"medications\":"+ medications +"}"))
-                .andExpect((status().isBadRequest()));
-        //TODO Vérifier message d'exception
-                /*.andExpect(jsonPath("$.errorMessage")
-                        .value("{address=Champ obligatoire, station=Le numéro du centre de secours doit être un entier positif}"));*/
+                .andExpect((status().isBadRequest()))
+                .andExpect(jsonPath("$.errorMessage")
+                .value("Le paramètre firstName est requis pour que la requête aboutisse."));
+        //TODO: Ajouter ce test à FirestationControllerTest
     }
 
     @Test
@@ -109,27 +104,24 @@ public class MedicalRecordControllerTest {
         mockMvc.perform(put("/medicalRecord")
                         .param("firstName",firstName).param("lastName","Wrong lastName")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"medications\":"+ medications +"}"))
-                .andExpect((status().isNotFound()));
-        //TODO Vérifier message d'exception
-
+                .andExpect((status().isNotFound()))
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Il n'y a pas de dossier médical associé à " + firstName + " Wrong lastName."));
     }
+
     @Test
     public void deleteMedicalRecord_returnCode204_whenAMedicalRecordIsDelete() throws Exception {
         when(medicalRecordService.getMedicalRecord(firstName,lastName)).thenReturn(Optional.of(medicalRecord));
         mockMvc.perform(delete("/medicalRecord").param("firstName",firstName).param("lastName",lastName))
                 .andExpect((status().isNoContent()));
     }
+
     @Test
     public void deleteFireStation_returnCode404_WhenTheFirestationtoDeleteIsNotFound() throws Exception {
         when(medicalRecordService.getMedicalRecord(firstName,lastName)).thenReturn(Optional.of(medicalRecord));
-        mockMvc.perform(delete("/medicalRecord").param("firstName","first name not present ").param("lastName",lastName))
-                .andExpect((status().isNotFound()));
-        //TODO Vérifier message d'exception
-
-        /*  .andExpect(jsonPath("$.errorMessage").value("L'adresse \"Address not present\" ne correspond à aucun centre de secours."));*/
+        mockMvc.perform(delete("/medicalRecord").param("firstName","first name not present").param("lastName",lastName))
+                .andExpect((status().isNotFound()))
+                .andExpect(jsonPath("$.errorMessage")
+                        .value("Il n'y a pas de dossier médical associé à first name not present "+ lastName+"."));
     }
-
-
-
-
 }
