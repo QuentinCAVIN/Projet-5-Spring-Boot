@@ -2,14 +2,12 @@ package com.safetynet.alerts.controller;
 
 import com.safetynet.alerts.exceptions.AlreadyPresentException;
 import com.safetynet.alerts.exceptions.NotFoundException;
-import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.MedicalRecordService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +23,6 @@ prénom et le nom de famille ne changent pas) ;
 ● supprimer un dossier médical (utilisez une combinaison de prénom et de nom comme
 identificateur unique).
  */
-//TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
 @RestController
 public class MedicalRecordController {
     @Autowired

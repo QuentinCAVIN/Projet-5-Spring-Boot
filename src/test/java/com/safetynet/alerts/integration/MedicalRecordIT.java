@@ -65,7 +65,7 @@ public class MedicalRecordIT {
     }
 
    @Test
-    public void deleteFireStationUpdatedWithSuccess() throws Exception {
+    public void deleteMedicalRecordUpdatedWithSuccess() throws Exception {
         updateMedicalRecordCreatedWithSuccess();
        mockMvc.perform(delete("/medicalRecord").param("firstName",firstName).param("lastName",lastName))
                .andExpect((status().isNoContent()));
@@ -94,10 +94,10 @@ public class MedicalRecordIT {
 
    @Test
     public void deleteMedicalRecordUpdatedTwice() throws Exception {
-       updateMedicalRecordCreatedWithSuccess();
-       mockMvc.perform(delete("/medicalRecord").param("firstName","first name not present").param("lastName",lastName))
+       deleteMedicalRecordUpdatedWithSuccess();
+       mockMvc.perform(delete("/medicalRecord").param("firstName",firstName).param("lastName",lastName))
                .andExpect((status().isNotFound()))
                .andExpect(jsonPath("$.errorMessage")
-                       .value("Il n'y a pas de dossier médical associé à first name not present "+ lastName+"."));
+                       .value("Il n'y a pas de dossier médical associé à " + firstName + " "+ lastName+"."));
     }
 }

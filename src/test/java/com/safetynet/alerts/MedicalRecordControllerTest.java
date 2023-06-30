@@ -94,7 +94,7 @@ public class MedicalRecordControllerTest {
                 .andExpect((status().isBadRequest()))
                 .andExpect(jsonPath("$.errorMessage")
                 .value("Le paramètre firstName est requis pour que la requête aboutisse."));
-        //TODO: Ajouter ce test à FirestationControllerTest
+        //TODO: Ajouter ce test à FirestationControllerTest une fois le problème Integer/string résolu
     }
 
     @Test
@@ -117,7 +117,7 @@ public class MedicalRecordControllerTest {
     }
 
     @Test
-    public void deleteFireStation_returnCode404_WhenTheFirestationtoDeleteIsNotFound() throws Exception {
+    public void deleteMedicalRecord_returnCode404_WhenTheMedicalRecordToDeleteIsNotFound() throws Exception {
         when(medicalRecordService.getMedicalRecord(firstName,lastName)).thenReturn(Optional.of(medicalRecord));
         mockMvc.perform(delete("/medicalRecord").param("firstName","first name not present").param("lastName",lastName))
                 .andExpect((status().isNotFound()))

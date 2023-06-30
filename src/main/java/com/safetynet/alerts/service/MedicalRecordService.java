@@ -1,12 +1,6 @@
 package com.safetynet.alerts.service;
 
-
 import com.safetynet.alerts.model.MedicalRecord;
-import com.safetynet.alerts.repository.MedicalRecordRepository;
-import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 public interface MedicalRecordService {

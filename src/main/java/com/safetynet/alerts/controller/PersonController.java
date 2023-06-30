@@ -10,8 +10,6 @@ famille ne changent pas, mais que les autres champs peuvent être modifiés) ;
 unique).
  */
 
-//TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
-
 import com.safetynet.alerts.exceptions.AlreadyPresentException;
 import com.safetynet.alerts.exceptions.NotFoundException;
 import com.safetynet.alerts.model.Person;

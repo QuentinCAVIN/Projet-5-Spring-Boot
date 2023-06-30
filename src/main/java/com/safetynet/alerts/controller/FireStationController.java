@@ -1,7 +1,7 @@
 package com.safetynet.alerts.controller;
 
-import com.safetynet.alerts.exceptions.FireStationAlreadyPresentException;
-import com.safetynet.alerts.exceptions.FireStationNotFoundException;
+import com.safetynet.alerts.exceptions.AlreadyPresentException;
+import com.safetynet.alerts.exceptions.NotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
 import jakarta.transaction.Transactional;
@@ -41,7 +41,7 @@ public class FireStationController {
         //cette ligne de code extrait l'adresse (String) de l'objet FireStation contenu dans l'Optional<FireStation>,
         // en utilisant la méthode de référence FireStation::getAddress. Si l'Optional est vide, la valeur null sera renvoyée.
         if (addressAlreadyPresent != null){
-            throw new FireStationAlreadyPresentException("Ce centre de secours à déja été créé: \""+ firestationAlreadyPresent.orElse(null) +"\"");
+            throw new AlreadyPresentException("Ce centre de secours à déja été créé: \""+ firestationAlreadyPresent.orElse(null) +"\"");
         }
         //FireStation fireStationAdded = fireStationService.saveFireStation(fireStation);
         return ResponseEntity.status(HttpStatus.CREATED).body(fireStationService.saveFireStation(fireStation));
@@ -67,7 +67,7 @@ public class FireStationController {
             fireStationService.saveFireStation(currentFireStation);
             return ResponseEntity.status(HttpStatus.OK).body(currentFireStation);
         } else {
-            throw new  FireStationNotFoundException("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");
+            throw new NotFoundException("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");
         }
     }
 
@@ -80,7 +80,7 @@ public class FireStationController {
             fireStationService.deleteFireStation(address);
             return ResponseEntity.noContent().build();
         } else{
-            throw new FireStationNotFoundException ("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");
+            throw new NotFoundException ("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");
         }
     }
 }
