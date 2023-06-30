@@ -1,11 +1,14 @@
 package com.safetynet.alerts.exceptions;
 
+import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
@@ -16,8 +19,10 @@ public class CustomExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomExceptionHandler.class);
 
-    @ExceptionHandler(FireStationNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleFireStationNotFoundException(FireStationNotFoundException exception, HttpServletRequest request) {
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFireStationNotFoundException(NotFoundException exception, HttpServletRequest request) {
+
         logger.error(exception.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse();
@@ -49,8 +54,10 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(FireStationAlreadyPresentException.class)
-    public ResponseEntity<ErrorResponse> handleFireStationAlreadyPresentException(FireStationAlreadyPresentException exception, HttpServletRequest request) {
+
+    @ExceptionHandler(AlreadyPresentException.class)
+    public ResponseEntity<ErrorResponse> handleFireStationAlreadyPresentException(AlreadyPresentException exception, HttpServletRequest request) {
+
         logger.error(exception.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse();
@@ -62,7 +69,25 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 
+    // CI-DESSOUS C'EST UN TEST
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleFireStationAlreadyPresentException(MissingServletRequestParameterException exception, HttpServletRequest request) {
+        String errorMessage = "Le paramètre " + exception.getParameterName() + " est requis pour que la requête aboutisse.";
+        logger.error(errorMessage);
+
+        //System.out.println("getMessage: " + exception.getMessage() +". getParameterName: " + exception.getParameterName() + ". getParameterType: " + exception.getParameterType() + ". toString: " + exception +exception.toString() + ". getBody: " + exception.getBody());
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        errorResponse.setErrorMessage(errorMessage);
+        errorResponse.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+        /*Capturer l'exception MissingServletRequestParameterException c'est dangeureux?
+        Dans le sens ou, je l'ai personalisé pour mon cas présent mais si l'exception surgit à un autre endroit inattendu, la personalistation sera alors fausse*/
+        //Utiliser eventuellement le même procédé avec NotReadableExceptionMachinChose pour le problème dans FireStation
+    }
     /*
     Problème rencontré sur les throws :
 
