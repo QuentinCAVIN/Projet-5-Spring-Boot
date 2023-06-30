@@ -11,5 +11,87 @@ unique).
  */
 
 //TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
+
+import com.safetynet.alerts.exceptions.AlreadyPresentException;
+import com.safetynet.alerts.exceptions.NotFoundException;
+import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.service.PersonService;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import java.util.Optional;
+
+@RestController
 public class PersonController {
+
+        @Autowired
+    private PersonService personService;
+
+    //● ajouter une nouvelle personne ;
+    @PostMapping("/person")
+    public ResponseEntity<Person> createPerson(@Valid @RequestBody Person person) {
+
+        Optional<Person> personAlreadyPresent = personService.getPerson(person.getFirstName(), person.getLastName());
+        if (Optional.of(personAlreadyPresent).orElse(null).isPresent()) {
+            throw new AlreadyPresentException(person.getFirstName() + " " + person.getLastName() +" est déjà enregistré: \""+ personAlreadyPresent.orElse(null) +"\"");
+        }
+        personService.savePerson(person);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    //● mettre à jour un dossier médical existant (comme évoqué précédemment, supposer que le
+    //prénom et le nom de famille ne changent pas) ;
+    @PutMapping("/person")
+    public ResponseEntity<Person> updatePerson(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName, @RequestBody Person person) {
+        Optional<Person> personAlreadyPresent = personService.getPerson(firstName, lastName);
+        if (personAlreadyPresent.isPresent()) {
+
+            Person currentPerson = personAlreadyPresent.get();
+            String address = person.getAddress();
+            String city = person.getCity();
+            int zip = person.getZip();
+            String phone = person.getPhone();
+            String email = person.getEmail();
+
+            if (address != null) {
+                currentPerson.setAddress(address);
+            }
+            if (city != null) {
+                currentPerson.setCity(city);
+            }
+            if (zip != 0) {
+                currentPerson.setZip(zip);
+            }
+            if (phone != null) {
+                currentPerson.setPhone(phone);
+            }
+            if (email != null) {
+                currentPerson.setEmail(email);
+            }
+            // TODO voir si il serais mieux d'utiliser un for each pour vérifier que les attributs sont null
+            // https://stackoverflow.com/questions/1038308/how-to-get-the-list-of-all-attributes-of-a-java-object-using-beanutils-introspec
+
+            personService.savePerson(currentPerson);
+            return ResponseEntity.status(HttpStatus.OK).body(currentPerson);
+        } else {
+            throw new NotFoundException("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
+        }
+    }
+
+    //● supprimer un dossier médical (utilisez une combinaison de prénom et de nom comme
+    //identificateur unique).
+    @Transactional
+    @DeleteMapping("/person")
+    public ResponseEntity deletePerson(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
+        Optional<Person> personAlreadyPresent = personService.getPerson(firstName, lastName);
+        if (personAlreadyPresent.isPresent()) {
+            personService.deletePerson(firstName,lastName);
+            return ResponseEntity.noContent().build();
+        } else {
+            throw new NotFoundException ("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
+        }
+    }
 }
