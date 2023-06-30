@@ -25,8 +25,8 @@ http://localhost:8080/firestation
     @Autowired
     private FireStationRepository fireStationRepository;
 
-    public Optional<FireStation> getFireStation(final Long id) {
-        return fireStationRepository.findById(id);
+    public Optional<FireStation> getFireStation(final String address) {
+        return fireStationRepository.findByAddress(address);
     }
 
     public Iterable<FireStation> getFireStations() {
@@ -36,6 +36,7 @@ http://localhost:8080/firestation
     public void deleteFireStation(final Long id) {
         fireStationRepository.deleteById(id);
     }
+    public void deleteFireStation(final String address) {fireStationRepository.deleteByAddress(address);}
 
     public FireStation saveFireStation(FireStation fireStation) {
         FireStation savedFireStation = fireStationRepository.save(fireStation);

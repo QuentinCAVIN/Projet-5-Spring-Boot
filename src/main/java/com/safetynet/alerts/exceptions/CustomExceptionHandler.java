@@ -19,8 +19,10 @@ public class CustomExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomExceptionHandler.class);
 
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponse> handleFireStationNotFoundException(NotFoundException exception, HttpServletRequest request) {
+
         logger.error(exception.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse();
@@ -52,8 +54,10 @@ public class CustomExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
+
     @ExceptionHandler(AlreadyPresentException.class)
     public ResponseEntity<ErrorResponse> handleFireStationAlreadyPresentException(AlreadyPresentException exception, HttpServletRequest request) {
+
         logger.error(exception.getMessage());
 
         ErrorResponse errorResponse = new ErrorResponse();
@@ -84,8 +88,6 @@ public class CustomExceptionHandler {
         Dans le sens ou, je l'ai personalisé pour mon cas présent mais si l'exception surgit à un autre endroit inattendu, la personalistation sera alors fausse*/
         //Utiliser eventuellement le même procédé avec NotReadableExceptionMachinChose pour le problème dans FireStation
     }
-
-
     /*
     Problème rencontré sur les throws :
 
