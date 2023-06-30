@@ -1,10 +1,17 @@
 package com.safetynet.alerts.controller;
 
+import com.safetynet.alerts.exceptions.FireStationAlreadyPresentException;
+import com.safetynet.alerts.exceptions.FireStationNotFoundException;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.Optional;
 
 /*
@@ -15,84 +22,65 @@ http://localhost:8080/firestation
         ● supprimer le mapping d'une caserne ou d'une adresse.
         */
 
-//TODO: Les methodes ci-dessous devrait être fonctionelles mais ne respectent pas
-// les consignent du projet (voir ci-dessus)
 @RestController
 public class FireStationController {
 
     @Autowired
     private FireStationService fireStationService;
 
-    /**
-     * Create - Add a new fire station
-     * @param fireStation An object fire station
-     * @return The fire station object saved
-     */
+    private static final Logger logger = LoggerFactory.getLogger(FireStationController.class);
+
+    //● ajout d'un mapping caserne/adresse
+
     @PostMapping("/firestation")
-    public FireStation createFireStation(@RequestBody FireStation fireStation) {
-        return fireStationService.saveFireStation(fireStation);
-    }
-
-
-    /**
-     * Read - Get one fire station
-     * @param id The id of the fire station
-     * @return An FireStation object full filled
-     */
-    @GetMapping(value="/firestation/{id}",produces = "application/json")// sert a spécifier le format
-    // de sortie. Doit le faire en json par default normalement.
-    public FireStation getFireStation(@PathVariable("id") final Long id) {
-        Optional<FireStation> fireStation = fireStationService.getFireStation(id);
-        if(fireStation.isPresent()) {
-            return fireStation.get();
-        } else {
-            return null;
+    public ResponseEntity createFireStation( @Valid @RequestBody FireStation fireStation){
+        //RequestBody va servir a Spring pour convertir
+        // le resultat de la requete http en objet Java Firestation
+        Optional<FireStation> firestationAlreadyPresent = fireStationService.getFireStation(fireStation.getAddress());
+        String addressAlreadyPresent = firestationAlreadyPresent.map(FireStation::getAddress).orElse(null);
+        //cette ligne de code extrait l'adresse (String) de l'objet FireStation contenu dans l'Optional<FireStation>,
+        // en utilisant la méthode de référence FireStation::getAddress. Si l'Optional est vide, la valeur null sera renvoyée.
+        if (addressAlreadyPresent != null){
+            throw new FireStationAlreadyPresentException("Ce centre de secours à déja été créé: \""+ firestationAlreadyPresent.orElse(null) +"\"");
         }
+        //FireStation fireStationAdded = fireStationService.saveFireStation(fireStation);
+        return ResponseEntity.status(HttpStatus.CREATED).body(fireStationService.saveFireStation(fireStation));
     }
 
-    /**
-     * Read - Get all firestations
-     * @return - An Iterable object of FireStation full filled
-     */
-    @GetMapping("/fireStations")
-    public Iterable<FireStation> getFireStations() {
-        return fireStationService.getFireStations();
-    }
+    //● mettre à jour le numéro de la caserne de pompiers d'une adresse
+    //TODO: retirer @Valid quand le problème du type de "station" sera réglé
+    @PutMapping("/firestation")
+    public ResponseEntity <FireStation> updateFireStation(@RequestParam("address") final String address, @Valid @RequestBody FireStation fireStation) {
+        //RequestParam = les parametres a renseigner dans la partie param, en clé/valeur ou clé = "address" et valeur = "10 rue de la paix"
+        // http://localhost:8080/firestation?address=29 15th St
+        // c'est mieux d'utiliser ce system plutot que d'utiliser /firestation/{address} (sauf pour les ID)
+        //@PathVariable va associer la valeur de l'identifiant "id" passé dans la requéte à Long id
+        Optional<FireStation> firestationAlreadyPresent = fireStationService.getFireStation(address);
+        //Optional<FireStation> est un container qui peut contenir soit un Firestation soit une valeur vide
+        if (firestationAlreadyPresent.isPresent()) {
 
-    /**
-     * Update - Update an existing fire station
-     * @param id - The id of the fire station to update
-     * @param fireStation - The fire station object updated
-     * @return
-     */
-    @PutMapping("/firestation/{id}")
-    public FireStation updateFireStation(@PathVariable("id") final Long id, @RequestBody FireStation fireStation) {
-        Optional<FireStation> f = fireStationService.getFireStation(id);
-        if(f.isPresent()) {
-            FireStation currentFireStation = f.get();
-
-            String address = fireStation.getAddress();
-            if(address != null) {
-                currentFireStation.setAddress(address);
-            }
-            int station = fireStation.getStation();
-            if(station != 0) {
+            FireStation currentFireStation = firestationAlreadyPresent.get();
+            String station = fireStation.getStation();
+            if (station != null) {
                 currentFireStation.setStation(station);
             }
             fireStationService.saveFireStation(currentFireStation);
-            return currentFireStation;
+            return ResponseEntity.status(HttpStatus.OK).body(currentFireStation);
         } else {
-            return null;
+            throw new  FireStationNotFoundException("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");
         }
     }
 
-
-    /**
-     * Delete - Delete an fire station
-     * @param id - The id of the fire station to delete
-     */
-    @DeleteMapping("/fireStation/{id}")
-    public void deleteFireStation(@PathVariable("id") final Long id) {
-        fireStationService.deleteFireStation(id);
+    //● supprimer le mapping d'une caserne ou d'une adresse.
+    @Transactional// sans ça, code 500. A comprendre
+    @DeleteMapping("/firestation")
+    public ResponseEntity deleteFireStation(@RequestParam("address") final String address) {
+        Optional <FireStation> firestationAlreadyPresent = fireStationService.getFireStation(address);
+        if (firestationAlreadyPresent.isPresent()) {
+            fireStationService.deleteFireStation(address);
+            return ResponseEntity.noContent().build();
+        } else{
+            throw new FireStationNotFoundException ("L'adresse \"" + address + "\" ne correspond à aucun centre de secours.");
+        }
     }
 }
