@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -83,6 +84,20 @@ public class CustomExceptionHandler {
         /*Capturer l'exception MissingServletRequestParameterException c'est dangeureux?
         Dans le sens ou, je l'ai personalisé pour mon cas présent mais si l'exception surgit à un autre endroit inattendu, la personalistation sera alors fausse*/
         //Utiliser eventuellement le même procédé avec NotReadableExceptionMachinChose pour le problème dans FireStation
+    }
+    //Va gérer l'exception mais le message seras moins personalisé vu que la méthode va capturer tout les NotReadable
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException exception, HttpServletRequest request) {
+        String errorMessage =  exception.getLocalizedMessage() ;
+        logger.error(errorMessage);
+
+        ErrorResponse errorResponse = new ErrorResponse();
+        errorResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+        errorResponse.setError(HttpStatus.BAD_REQUEST.getReasonPhrase());
+        errorResponse.setErrorMessage(errorMessage);
+        errorResponse.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
     /*
     Problème rencontré sur les throws :

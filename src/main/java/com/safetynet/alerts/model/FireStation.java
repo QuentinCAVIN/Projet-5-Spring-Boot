@@ -17,8 +17,8 @@ public class FireStation {
     private String address;
 
     @NotNull(message="Champ obligatoire")
-    @Positive(message = "Le numéro du centre de secours doit être un entier positif")
-    private String station;
+    //@Positive supprimé vu que l'erreur NotReadable est throw avant d'accéder à l'annotation Jakarta
+    private Integer station;
 
     //J'ai du modifier le type de "station" (autrefois Integer maintenant String) pour pouvoir utiliser l'annotation @Positive.
     //Une entrée d'une String dans mon body sur le champs "station" (normalement prévu pour recevoir un entier) va générer une erreur MethodArgumentNotValidException qui retourne correctement le message.

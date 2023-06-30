@@ -2,6 +2,7 @@ package com.safetynet.alerts.integration;
 
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.service.FireStationService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,8 +72,7 @@ public class FireStationIT {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"station\":\"Wrong station argument\" }"))
                 .andExpect((status().isBadRequest()))
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("{address=Champ obligatoire, station=Le numéro du centre de secours doit être un entier positif}"));
-        //TODO: le test ne passera plus si je bascule "station" sur un String. Adapter à ce moment la le test
+                        .value(Matchers.containsString("\"Wrong station argument\": not a valid `java.lang.Integer` value")));
     }
 
     @Test

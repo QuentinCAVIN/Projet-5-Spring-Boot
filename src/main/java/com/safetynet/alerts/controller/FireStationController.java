@@ -48,9 +48,9 @@ public class FireStationController {
     }
 
     //● mettre à jour le numéro de la caserne de pompiers d'une adresse
-    //TODO: retirer @Valid quand le problème du type de "station" sera réglé
+
     @PutMapping("/firestation")
-    public ResponseEntity <FireStation> updateFireStation(@RequestParam("address") final String address, @Valid @RequestBody FireStation fireStation) {
+    public ResponseEntity <FireStation> updateFireStation(@RequestParam("address") final String address, @RequestBody FireStation fireStation) {
         //RequestParam = les parametres a renseigner dans la partie param, en clé/valeur ou clé = "address" et valeur = "10 rue de la paix"
         // http://localhost:8080/firestation?address=29 15th St
         // c'est mieux d'utiliser ce system plutot que d'utiliser /firestation/{address} (sauf pour les ID)
@@ -60,7 +60,7 @@ public class FireStationController {
         if (firestationAlreadyPresent.isPresent()) {
 
             FireStation currentFireStation = firestationAlreadyPresent.get();
-            String station = fireStation.getStation();
+            Integer station = fireStation.getStation();
             if (station != null) {
                 currentFireStation.setStation(station);
             }

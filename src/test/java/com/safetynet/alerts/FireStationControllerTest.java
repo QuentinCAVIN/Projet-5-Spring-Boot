@@ -4,6 +4,7 @@ import com.safetynet.alerts.controller.FireStationController;
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.service.FireStationService;
 import com.safetynet.alerts.service.LoadDataService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class FireStationControllerTest {
     @Test
     public void createFireStation_returnCode201_whenFireStationIsCreated() throws Exception {
         FireStation fireStation = new FireStation();
-        fireStation.setStation("9");
+        fireStation.setStation(9);
         fireStation.setAddress(addressTest);// a factoriser dans un BeforeEach
         when(fireStationService.saveFireStation(any())).thenReturn(fireStation);
         mockMvc.perform(post("/firestation")
@@ -73,15 +74,10 @@ public class FireStationControllerTest {
                 .andExpect(jsonPath("$.errorMessage")
                         .value("Ce centre de secours à déja été créé: \""+ fireStation+"\""));
     }
-
-    @Disabled
     @Test
-    //TODO: Retirer le @Valid de updateFireStation corrige le probléme (oblige à d'entrer une adresse dans le body)
-    // Voir avant si il faut traiter le probléme de désérialisation lié au type des variable.
-    // @Valid serait necessaire dans ce cas.
     public void updateFireStation_returnCode200_whenAFireStationIsModified() throws Exception {
         FireStation fireStation = new FireStation();
-        fireStation.setStation("9");
+        fireStation.setStation(9);
         fireStation.setAddress(addressTest);
         when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));// c'est un Wrap?
         // ci-dessus a mettre dans un BeforeEach
@@ -95,7 +91,7 @@ public class FireStationControllerTest {
     @Test
     public void updateFireStation_returnCode400_whenAWrongStationArgumentIsEnter() throws Exception {
         FireStation fireStation = new FireStation();
-        fireStation.setStation("9");
+        fireStation.setStation(9);
         fireStation.setAddress(addressTest);
         when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));
         mockMvc.perform(put("/firestation").param("address",addressTest)
@@ -103,15 +99,11 @@ public class FireStationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON).content("{\"station\":\"Wrong station argument\" }"))
                 .andExpect((status().isBadRequest()))
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("{address=Champ obligatoire, station=Le numéro du centre de secours doit être un entier positif}"));
-                //TODO: le test ne passera plus si je bascule "station" sur un String. Adapter à ce moment la le test
+                        .value(Matchers.containsString("\"Wrong station argument\": not a valid `java.lang.Integer` value")));
     }
 
-    @Disabled
+
     @Test
-    //TODO: Retirer le @Valid de updateFireStation corrige le probléme (oblige à d'entrer une adresse dans le body)
-    // Voir avant si il faut traiter le probléme de désérialisation lié au type des variable.
-    // @Valid serait necessaire dans ce cas.
     public void updateFireStation_returnCode404_whenAWrongAddressIsEnter() throws Exception {
         mockMvc.perform(put("/firestation").param("address","Wrong address")
                         // param pour répondre à @RequestParam("address")
@@ -123,7 +115,7 @@ public class FireStationControllerTest {
     @Test
     public void deleteFireStation_returnCode204_whenAFireStationIsDelete() throws Exception {
         FireStation fireStation = new FireStation();
-        fireStation.setStation("9");
+        fireStation.setStation(9);
         fireStation.setAddress(addressTest);
         when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));
         mockMvc.perform(delete("/firestation").param("address",addressTest))

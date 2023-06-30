@@ -1,12 +1,7 @@
 package com.safetynet.alerts.exceptions;
 
 import lombok.Data;
-import org.springframework.validation.FieldError;
-
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Data
 public class ErrorResponse {
