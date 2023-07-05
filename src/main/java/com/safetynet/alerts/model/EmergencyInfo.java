@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data //Lombock pour éviter getters et setters
 @JsonFilter("filter")
-public class EmergencySheet {
+public class EmergencyInfo {
 
     private String firstName;
 
@@ -24,6 +24,8 @@ public class EmergencySheet {
     private String email;
 
     private String birthdate;
+
+    private int age;
 
     private List<String> medications;
 
