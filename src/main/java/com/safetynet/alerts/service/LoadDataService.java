@@ -1,10 +1,7 @@
 package com.safetynet.alerts.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.safetynet.alerts.model.FireStation;
-import com.safetynet.alerts.model.InputData;
-import com.safetynet.alerts.model.MedicalRecord;
-import com.safetynet.alerts.model.Person;
+import com.safetynet.alerts.model.*;
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
 import com.safetynet.alerts.repository.PersonRepository;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
