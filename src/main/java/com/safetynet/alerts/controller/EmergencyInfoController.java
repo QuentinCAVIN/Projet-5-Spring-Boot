@@ -23,9 +23,9 @@ public class EmergencyInfoController {
 
     @GetMapping("/firestation")
     public ResponseEntity findPersonsCoveredByFireStation(@RequestParam("stationNumber") final Integer stationNumber) {
-        Map<String,Object> personCoveredByFireStation = emergencyInfoService.findPersonsCoveredByFireStation(stationNumber);
+        Map<String,Object> personCoveredByFireStation = emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(stationNumber);
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
-                .filterOutAllExcept("firstName","lastName","address","phone","age");//TODO retirer age quand finis
+                .filterOutAllExcept("firstName","lastName","address","phone");//TODO retirer age quand finis
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
         MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(personCoveredByFireStation);
         emergencySheetFilter.setFilters(filter);

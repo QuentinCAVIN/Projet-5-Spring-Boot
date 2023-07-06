@@ -3,6 +3,9 @@ package com.safetynet.alerts.model;
 import com.fasterxml.jackson.annotation.JsonFilter;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data //Lombock pour éviter getters et setters
@@ -33,4 +36,13 @@ public class EmergencyInfo {
 
     private Integer station;
 
+    public void setAge() {
+
+        if (birthdate != null){
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+            LocalDate birthDate = LocalDate.parse(birthdate,formatter);
+            LocalDate currentDate = LocalDate.now();
+            this.age = ((Period.between(birthDate,currentDate)).getYears());
+        }
+    }
 }
