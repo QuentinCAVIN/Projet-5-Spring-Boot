@@ -20,9 +20,9 @@ public class EmergencyInfoServiceImpl implements EmergencyInfoService {
     @Autowired
     EmergencyInfoRepository emergencyInfoRepository;
 
-    public Map<String,Object> findEmergencyInfoOfPeopleCoveredByFirestation(Integer station){
+    public Map <String,Object> findEmergencyInfoOfPeopleCoveredByFirestation(Integer station){
         int numberOfChilden = 0;
-        int numberofAdult = 0;
+        int numberOfAdult = 0;
 
         emergencyInfoRepository.fileEmergencyInfo();
 
@@ -33,14 +33,14 @@ public class EmergencyInfoServiceImpl implements EmergencyInfoService {
                 if (emergencyInfo.getAge() < 19){
                     numberOfChilden ++;
                 } else {
-                    numberofAdult ++;
+                    numberOfAdult ++;
                 }
             }
         }
 
-        Map<String,Object> endpointExpected = new LinkedHashMap<>();
+        Map <String,Object> endpointExpected = new LinkedHashMap<>();
         endpointExpected.put("Personnes couvertes par le centre de secours n°" + station + ":", emergencyInfoOfPeopleCoveredByFirestation);
-        endpointExpected.put("Nombre d'aldutes présent:",numberofAdult);
+        endpointExpected.put("Nombre d'adultes présent:",numberOfAdult);
         endpointExpected.put("Nombre d'enfants présent:",numberOfChilden);
 
         return endpointExpected;

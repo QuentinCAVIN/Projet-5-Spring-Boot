@@ -3,6 +3,8 @@ package com.safetynet.alerts.controller;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.safetynet.alerts.exceptions.NotFoundException;
+import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.service.EmergencyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,12 +22,17 @@ public class EmergencyInfoController {
 
     @Autowired
     private EmergencyInfoService emergencyInfoService;
+    @Autowired
+    FireStationRepository fireStationRepository;
 
     @GetMapping("/firestation")
     public ResponseEntity findPersonsCoveredByFireStation(@RequestParam("stationNumber") final Integer stationNumber) {
+        if(fireStationRepository.findByStation(stationNumber).isEmpty()){
+            throw new NotFoundException ("Il n'existe aucun centre de secours n° " + stationNumber);
+        }
         Map<String,Object> personCoveredByFireStation = emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(stationNumber);
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
-                .filterOutAllExcept("firstName","lastName","address","phone");//TODO retirer age quand finis
+                .filterOutAllExcept("firstName","lastName","address","phone");
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
         MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(personCoveredByFireStation);
         emergencySheetFilter.setFilters(filter);
