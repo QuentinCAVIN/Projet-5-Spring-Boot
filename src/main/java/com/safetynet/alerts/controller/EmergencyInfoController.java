@@ -7,6 +7,7 @@ import com.safetynet.alerts.exceptions.NotFoundException;
 import com.safetynet.alerts.model.EmergencyInfo;
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.service.EmergencyInfoService;
+import com.safetynet.alerts.service.FireStationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +25,10 @@ public class EmergencyInfoController {
 
     @Autowired
     private EmergencyInfoService emergencyInfoService;
+
     @Autowired
-    FireStationRepository fireStationRepository;
+    FireStationService fireStationService;
+
 
     /*Cette url doit retourner une liste des personnes couvertes par la caserne de pompiers correspondante.
     Donc, si le numéro de station = 1, elle doit renvoyer les habitants couverts par la station numéro 1. La liste
@@ -92,24 +95,57 @@ public class EmergencyInfoController {
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
         MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(phoneNumberCoveredByFirestation);
         emergencySheetFilter.setFilters(filter);
+
         return ResponseEntity.status(HttpStatus.OK).body(emergencySheetFilter);
     }
 
+    /*
+    Cette url doit retourner la liste des habitants vivant à l’adresse donnée ainsi que le numéro de la caserne
+    de pompiers la desservant. La liste doit inclure le nom, le numéro de téléphone, l'âge et les antécédents
+    médicaux (médicaments, posologie et allergies) de chaque personne.
+     */
     @GetMapping("/fire")
     public ResponseEntity findEmergencyInformationByAddress(@RequestParam("address") final String address) {
-        return null;
+        if (emergencyInfoService.getEmergencyInfoByAddress(address).isEmpty()) {
+            throw new NotFoundException("Le " + address + " ne correspond à aucune adresse enregistrée.");
+        }
+
+        Map <String,Object> endpointExpected = new LinkedHashMap<>();
+        endpointExpected.put("N° du centre de secours couvrant le " + address, fireStationService.getFireStation(address).get().getStation());
+        endpointExpected.put("Personnes présente au " + address + ":",emergencyInfoService.findEmergencyInfoOfPeopleByAddress(address));
+
+        SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
+                .filterOutAllExcept("firstName", "lastName", "phone", "age", "medications", "allergies");
+        FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
+        MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(endpointExpected);
+        emergencySheetFilter.setFilters(filter);
+
+        return ResponseEntity.status(HttpStatus.OK).body(emergencySheetFilter);
     }
 
+    /*
+    Cette url doit retourner une liste de tous les foyers desservis par la caserne. Cette liste doit regrouper les
+    personnes par adresse. Elle doit aussi inclure le nom, le numéro de téléphone et l'âge des habitants, et
+    faire figurer leurs antécédents médicaux (médicaments, posologie et allergies) à côté de chaque nom.
+     */
     @GetMapping("/flood/stations")
     public ResponseEntity findEmergencyInformationByFireStationCoverage(@RequestParam("stations") final List<Integer> firestations) {
         return null;
     }
 
+    /*
+    Cette url doit retourner le nom, l'adresse, l'âge, l'adresse mail et les antécédents médicaux (médicaments,
+    posologie, allergies) de chaque habitant. Si plusieurs personnes portent le même nom, elles doivent
+    toutes apparaître.
+     */
     @GetMapping("/personInfo")
     public ResponseEntity findEmergencyInformationByPerson(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
         return null;
     }
 
+    /*
+    Cette url doit retourner les adresses mail de tous les habitants de la ville.
+    */
     @GetMapping("/communityEmail")
     public ResponseEntity findEmailByCity(@RequestParam("city") final String city) {
         return null;
