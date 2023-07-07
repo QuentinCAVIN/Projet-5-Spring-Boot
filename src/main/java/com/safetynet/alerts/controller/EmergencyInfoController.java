@@ -40,8 +40,8 @@ public class EmergencyInfoController {
 
         Map <String,Object> endpointExpected = new LinkedHashMap<>();
         endpointExpected.put("Personnes couvertes par le centre de secours n°" + stationNumber + ":", emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(stationNumber));
-        endpointExpected.put("Nombre d'adultes présent:",emergencyInfoService.numberOfAdultCoveredByFirestation(stationNumber));
-        endpointExpected.put("Nombre d'enfants présent:",emergencyInfoService.numberOfChildrenCoveredByFirestation(stationNumber));
+        endpointExpected.put("Adultes présents: ",emergencyInfoService.numberOfAdultCoveredByFirestation(stationNumber));
+        endpointExpected.put("Enfants présents: ",emergencyInfoService.numberOfChildrenCoveredByFirestation(stationNumber));
 
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
                 .filterOutAllExcept("firstName", "lastName", "address", "phone");

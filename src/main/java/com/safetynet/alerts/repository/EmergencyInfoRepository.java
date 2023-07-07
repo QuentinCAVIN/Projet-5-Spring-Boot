@@ -19,7 +19,9 @@ public class EmergencyInfoRepository {
 
     private static List<EmergencyInfo> listOfAllEmergencyInfo = new ArrayList<>();
 
-    public void fileEmergencyInfo() {
+    private void fileEmergencyInfo() {
+
+        listOfAllEmergencyInfo.clear();
 
         List<FireStation> allFireStations = fireStationRepository.findAll();
         List<MedicalRecord> allMedicalRecords = medicalRecordRepository.findAll();
@@ -49,10 +51,8 @@ public class EmergencyInfoRepository {
                     emergencyInfo.setStation(fireStation.getStation());
                 }
             }
-
             listOfAllEmergencyInfo.add(emergencyInfo);
         }
-
     }
 
     public List<EmergencyInfo> getListOfAllEmergencyInfo() {
