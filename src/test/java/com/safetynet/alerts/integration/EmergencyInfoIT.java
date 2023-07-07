@@ -15,9 +15,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EmergencyInfoIT {
     @Autowired
     MockMvc mockMvc;
-@Test
-    public void test() throws Exception {
+
+    @Test
+    public void testfindpeoplebystation() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/firestation").param("stationNumber", "1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
+    @Test
+    public void testFindChildByStation() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/childAlert").param("address", "1509 Culver St")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

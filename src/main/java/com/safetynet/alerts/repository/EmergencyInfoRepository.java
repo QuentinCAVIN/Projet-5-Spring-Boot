@@ -56,10 +56,29 @@ public class EmergencyInfoRepository {
     }
 
     public List<EmergencyInfo> getListOfAllEmergencyInfo() {
+        fileEmergencyInfo();
         return listOfAllEmergencyInfo;
     }
 
-    public void add(EmergencyInfo emergencyInfo) {
-        listOfAllEmergencyInfo.add(emergencyInfo);
+    public List<EmergencyInfo> findAllByStation (Integer station){
+        fileEmergencyInfo();
+        List<EmergencyInfo> emergencyInfoByStation= new ArrayList<>();
+        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo){
+            if (emergencyInfo.getStation().equals(station)){
+                emergencyInfoByStation.add(emergencyInfo);
+            }
+        }
+        return emergencyInfoByStation;
+    }
+
+    public List<EmergencyInfo> findAllByAddress (String address){
+        fileEmergencyInfo();
+        List<EmergencyInfo> emergencyInfoByAddress = new ArrayList<>();
+        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo){
+            if (emergencyInfo.getAddress().equals(address)){
+                emergencyInfoByAddress.add(emergencyInfo);
+            }
+        }
+        return emergencyInfoByAddress;
     }
 }
