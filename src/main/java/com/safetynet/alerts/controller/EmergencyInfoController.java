@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetynet.alerts.exceptions.NotFoundException;
+import com.safetynet.alerts.model.EmergencyInfo;
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.service.EmergencyInfoService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -35,12 +37,18 @@ public class EmergencyInfoController {
         if (emergencyInfoService.getEmergencyInfoByStation(stationNumber).isEmpty()) {
             throw new NotFoundException("Il n'existe aucun centre de secours n° " + stationNumber + ".");
         }
-        Map<String, Object> personCoveredByFireStation = emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(stationNumber);
+
+        Map <String,Object> endpointExpected = new LinkedHashMap<>();
+        endpointExpected.put("Personnes couvertes par le centre de secours n°" + stationNumber + ":", emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(stationNumber));
+        endpointExpected.put("Adultes présents: ",emergencyInfoService.numberOfAdultCoveredByFirestation(stationNumber));
+        endpointExpected.put("Enfants présents: ",emergencyInfoService.numberOfChildrenCoveredByFirestation(stationNumber));
+
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
                 .filterOutAllExcept("firstName", "lastName", "address", "phone");
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
-        MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(personCoveredByFireStation);
+        MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(endpointExpected);
         emergencySheetFilter.setFilters(filter);
+
         return ResponseEntity.status(HttpStatus.OK).body(emergencySheetFilter);
         // https://openclassrooms.com/fr/courses/4668056-construisez-des-microservices/7652183-renvoyez-les-bons-codes-et-filtrez-les-reponses
     }
@@ -54,12 +62,15 @@ public class EmergencyInfoController {
         if (emergencyInfoService.getEmergencyInfoByAddress(address).isEmpty()) {
             throw new NotFoundException("Le " + address + " ne correspond à aucune adresse enregistrée.");
         }
-        Map<String, Object> childrenByAddress = emergencyInfoService.findEmergencyinfoOfCHildrenByAddress(address);
+
+        Map <String,Object> endpointExpected = new LinkedHashMap<>();
+        endpointExpected.put("Enfants présents au " + address + ":", emergencyInfoService.findEmergencyinfoOfCHildrenByAddress(address));
+        endpointExpected.put("Adultes présents à cette adresse:",emergencyInfoService.findAdultByAddress(address));
 
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
                 .filterOutAllExcept("firstName", "lastName", "age");
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
-        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(childrenByAddress);
+        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(endpointExpected);
         emergencyInfoFilter.setFilters(filter);
 
         return ResponseEntity.status(HttpStatus.OK).body(emergencyInfoFilter);
@@ -71,7 +82,17 @@ public class EmergencyInfoController {
      */
     @GetMapping("/phoneAlert")
     public ResponseEntity findPhoneNumbersServedByFirestation(@RequestParam("firestation") final Integer firestationNumber) {
-        return null;
+        if (emergencyInfoService.getEmergencyInfoByStation(firestationNumber).isEmpty()) {
+            throw new NotFoundException("Il n'existe aucun centre de secours n° " +firestationNumber + ".");
+        }
+        List<EmergencyInfo> phoneNumberCoveredByFirestation = emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(firestationNumber);
+
+        SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
+                .filterOutAllExcept( "phone");
+        FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
+        MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(phoneNumberCoveredByFirestation);
+        emergencySheetFilter.setFilters(filter);
+        return ResponseEntity.status(HttpStatus.OK).body(emergencySheetFilter);
     }
 
     @GetMapping("/fire")

@@ -73,21 +73,19 @@ public class EmergencyInfoControllerTest {
         peopleCoveredByFirestationService.add(emergencyInfoOfAChild);
         peopleCoveredByFirestationService.add(emergencyInfoOfAnAdult);
 
-        Map<String, Object> endpointExpected = new LinkedHashMap<>();
-        endpointExpected.put("Personnes couvertes par le centre de secours n° 1:", peopleCoveredByFirestationService);
-        endpointExpected.put("Adultes présents:", 1);
-        endpointExpected.put("Enfants présents:", 1);
 
-        when(emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(1)).thenReturn(endpointExpected);
+        when(emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(1)).thenReturn(peopleCoveredByFirestationService);
+        when(emergencyInfoService.numberOfChildrenCoveredByFirestation(1)).thenReturn(1);
+        when(emergencyInfoService.numberOfAdultCoveredByFirestation(1)).thenReturn(1);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/firestation").param("stationNumber", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.['Personnes couvertes par le centre de secours n° 1:'][1].lastName").value("b"))
-                .andExpect(jsonPath("$.['Personnes couvertes par le centre de secours n° 1:'][0]").value(emergencyInfoOfAChild))
-                .andExpect(jsonPath("$.['Personnes couvertes par le centre de secours n° 1:'][1]").value(emergencyInfoOfAnAdult))
-                .andExpect(jsonPath("$.['Enfants présents:']").value(1))
-                .andExpect(jsonPath("$.['Adultes présents:']").value(1));
+                .andExpect(jsonPath("$.['Personnes couvertes par le centre de secours n°1:'][1].lastName").value("b"))
+                .andExpect(jsonPath("$.['Personnes couvertes par le centre de secours n°1:'][0]").value(emergencyInfoOfAChild))
+                .andExpect(jsonPath("$.['Personnes couvertes par le centre de secours n°1:'][1]").value(emergencyInfoOfAnAdult))
+                .andExpect(jsonPath("$.['Adultes présents: ']").value(1))
+                .andExpect(jsonPath("$.['Enfants présents: ']").value(1));
 
     }
 
@@ -111,27 +109,27 @@ public class EmergencyInfoControllerTest {
         emergencyInfoOfPersonB.setLastName("b");
         emergencyInfoOfPersonB.setAge(12);
 
-        List<EmergencyInfo> peopleCoveredByFirestationService = new ArrayList<>();
-        peopleCoveredByFirestationService.add(emergencyInfoOfPersonA);
-        peopleCoveredByFirestationService.add(emergencyInfoOfPersonB);
+        List<EmergencyInfo> emergencyInfoOfChildrenAtThisAddress = new ArrayList<>();
+        emergencyInfoOfChildrenAtThisAddress.add(emergencyInfoOfPersonA);
+        emergencyInfoOfChildrenAtThisAddress.add(emergencyInfoOfPersonB);
 
-        Map<String, Object> endpointExpected = new LinkedHashMap<>();
-        endpointExpected.put("Enfants présents au a", peopleCoveredByFirestationService);
-        endpointExpected.put("Adultes présents à cette adresse:", "1");
+        List<String> adultAtThisAddress = new ArrayList<>();
+        adultAtThisAddress.add("adultC adultC");
+        adultAtThisAddress.add("adultD adultD");
 
-        when(emergencyInfoService.findEmergencyinfoOfCHildrenByAddress("a")).thenReturn(endpointExpected);
 
-        System.out.println(endpointExpected);
+        when(emergencyInfoService.findEmergencyinfoOfCHildrenByAddress("a")).thenReturn(emergencyInfoOfChildrenAtThisAddress);
+        when(emergencyInfoService.findAdultByAddress("a")).thenReturn(adultAtThisAddress);
+
         mockMvc.perform(MockMvcRequestBuilders.get("/childAlert").param("address", "a")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.['Enfants présents au a'][0]").value(emergencyInfoOfPersonA))
-                .andExpect(jsonPath("$.['Enfants présents au a'][1]").value(emergencyInfoOfPersonB))
-                .andExpect(jsonPath("$.['Adultes présents à cette adresse:']").value("1"));
-
+                .andExpect(jsonPath("$.['Enfants présents au a:'][0]").value(emergencyInfoOfPersonA))
+                .andExpect(jsonPath("$.['Enfants présents au a:'][1]").value(emergencyInfoOfPersonB))
+                .andExpect(jsonPath("$.['Adultes présents à cette adresse:']").value(adultAtThisAddress));
     }
 
-    @Test
+   @Test
     public void findChildrenByAddress_returnCode404_whenAnUnknownAddressIsEnter() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/childAlert").param("address", "10 rue")
                         .contentType(MediaType.APPLICATION_JSON))
