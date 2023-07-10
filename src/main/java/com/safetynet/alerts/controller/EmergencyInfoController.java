@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.safetynet.alerts.exceptions.NotFoundException;
 import com.safetynet.alerts.model.EmergencyInfo;
-import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.service.EmergencyInfoService;
 import com.safetynet.alerts.service.FireStationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,13 +21,10 @@ import java.util.Map;
 
 @RestController
 public class EmergencyInfoController {
-
     @Autowired
     private EmergencyInfoService emergencyInfoService;
-
     @Autowired
     FireStationService fireStationService;
-
 
     /*Cette url doit retourner une liste des personnes couvertes par la caserne de pompiers correspondante.
     Donc, si le numéro de station = 1, elle doit renvoyer les habitants couverts par la station numéro 1. La liste
@@ -49,10 +45,10 @@ public class EmergencyInfoController {
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
                 .filterOutAllExcept("firstName", "lastName", "address", "phone");
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
-        MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(endpointExpected);
-        emergencySheetFilter.setFilters(filter);
+        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(endpointExpected);
+        emergencyInfoFilter.setFilters(filter);
 
-        return ResponseEntity.status(HttpStatus.OK).body(emergencySheetFilter);
+        return ResponseEntity.status(HttpStatus.OK).body(emergencyInfoFilter);
         // https://openclassrooms.com/fr/courses/4668056-construisez-des-microservices/7652183-renvoyez-les-bons-codes-et-filtrez-les-reponses
     }
 
@@ -93,10 +89,10 @@ public class EmergencyInfoController {
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
                 .filterOutAllExcept( "phone");
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
-        MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(phoneNumberCoveredByFirestation);
-        emergencySheetFilter.setFilters(filter);
+        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(phoneNumberCoveredByFirestation);
+        emergencyInfoFilter.setFilters(filter);
 
-        return ResponseEntity.status(HttpStatus.OK).body(emergencySheetFilter);
+        return ResponseEntity.status(HttpStatus.OK).body(emergencyInfoFilter);
     }
 
     /*
@@ -117,10 +113,10 @@ public class EmergencyInfoController {
         SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
                 .filterOutAllExcept("firstName", "lastName", "phone", "age", "medications", "allergies");
         FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
-        MappingJacksonValue emergencySheetFilter = new MappingJacksonValue(endpointExpected);
-        emergencySheetFilter.setFilters(filter);
+        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(endpointExpected);
+        emergencyInfoFilter.setFilters(filter);
 
-        return ResponseEntity.status(HttpStatus.OK).body(emergencySheetFilter);
+        return ResponseEntity.status(HttpStatus.OK).body(emergencyInfoFilter);
     }
 
     /*
@@ -129,8 +125,26 @@ public class EmergencyInfoController {
     faire figurer leurs antécédents médicaux (médicaments, posologie et allergies) à côté de chaque nom.
      */
     @GetMapping("/flood/stations")
-    public ResponseEntity findEmergencyInformationByFireStationCoverage(@RequestParam("stations") final List<Integer> firestations) {
-        return null;
+    public ResponseEntity findEmergencyInformationByFireStationsCoverage(@RequestParam("stations") final List<Integer> firestations) {
+        for (Integer firestation : firestations){
+            if (emergencyInfoService.getEmergencyInfoByStation(firestation).isEmpty()) {
+                throw new NotFoundException("Il n'existe aucun centre de secours n° " + firestation + ".");
+            }
+        }
+
+        Map <String,Object> endpointExpected = new LinkedHashMap<>();
+        for (String address : fireStationService.getAddressesCoveredByStations(firestations)){
+
+            endpointExpected.put(address,emergencyInfoService.findEmergencyInfoOfPeopleByAddress(address));
+        }
+
+        SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
+                .filterOutAllExcept("firstName", "lastName", "phone", "age", "medications", "allergies");
+        FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
+        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(endpointExpected);
+        emergencyInfoFilter.setFilters(filter);
+
+        return ResponseEntity.status(HttpStatus.OK).body(emergencyInfoFilter);
     }
 
     /*
@@ -140,7 +154,19 @@ public class EmergencyInfoController {
      */
     @GetMapping("/personInfo")
     public ResponseEntity findEmergencyInformationByPerson(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
-        return null;
+        List <EmergencyInfo> endpointExpected = emergencyInfoService.findEmergencyInfoByFirstNameAndLastName(firstName,lastName);
+
+        if (endpointExpected.isEmpty()){
+            throw new NotFoundException("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
+        }
+
+        SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
+                .filterOutAllExcept("firstName", "lastName", "age", "email", "medications", "allergies");
+        FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
+        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(endpointExpected);
+        emergencyInfoFilter.setFilters(filter);
+
+        return ResponseEntity.status(HttpStatus.OK).body(emergencyInfoFilter);
     }
 
     /*
@@ -148,6 +174,18 @@ public class EmergencyInfoController {
     */
     @GetMapping("/communityEmail")
     public ResponseEntity findEmailByCity(@RequestParam("city") final String city) {
-        return null;
+
+        List<EmergencyInfo> endpointExpected = emergencyInfoService.findEmergencyInfoByCity(city);
+
+        if (endpointExpected.isEmpty()){
+            throw new NotFoundException("Il n'y a pas de donnée associée à " + city + ".");
+        }
+        SimpleBeanPropertyFilter filterProprety = SimpleBeanPropertyFilter
+                .filterOutAllExcept( "email");
+        FilterProvider filter = new SimpleFilterProvider().addFilter("filter", filterProprety);
+        MappingJacksonValue emergencyInfoFilter = new MappingJacksonValue(endpointExpected);
+        emergencyInfoFilter.setFilters(filter);
+
+        return ResponseEntity.status(HttpStatus.OK).body(emergencyInfoFilter);
     }
 }

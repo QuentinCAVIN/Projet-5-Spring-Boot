@@ -81,4 +81,15 @@ public class EmergencyInfoRepository {
         }
         return emergencyInfoByAddress;
     }
+
+    public List<EmergencyInfo> findAllByCity (String city){
+        fileEmergencyInfo();
+        List<EmergencyInfo> emergencyInfoByCity = new ArrayList<>();
+        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo){
+            if (emergencyInfo.getCity().equals(city)){
+                emergencyInfoByCity.add(emergencyInfo);
+            }
+        }
+        return emergencyInfoByCity;
+    }
 }

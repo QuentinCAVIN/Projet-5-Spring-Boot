@@ -6,6 +6,8 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Data
@@ -20,7 +22,6 @@ http://localhost:8080/firestation
         ● supprimer le mapping d'une caserne ou d'une adresse.
         */
 
-    //TODO: implémenter les méthodes necessaires pour coller au endpoint ci-dessus.
 // Les methodes ci-dessous sont utilisé par FireStationController.
     @Autowired
     private FireStationRepository fireStationRepository;
@@ -41,5 +42,27 @@ http://localhost:8080/firestation
     public FireStation saveFireStation(FireStation fireStation) {
         FireStation savedFireStation = fireStationRepository.save(fireStation);
         return savedFireStation;
+    }
+
+    public List<String> getAddressesCoveredByStation(Integer station){
+
+        List<String> addressCoveredByStation = new ArrayList<>();
+        for (FireStation fireStation : fireStationRepository.findAllByStation(station)){
+            String address = fireStation.getAddress();
+            addressCoveredByStation.add(address);
+        }
+
+        return addressCoveredByStation;
+    }
+
+    public List<String> getAddressesCoveredByStations(List<Integer>stations){
+        List<String> allAddresses = new ArrayList<>();
+        for (Integer station : stations) {
+            List<String> addresses = getAddressesCoveredByStation(station);
+            for (String address : addresses) {
+                allAddresses.add(address);
+            }
+        }
+        return  allAddresses;
     }
 }

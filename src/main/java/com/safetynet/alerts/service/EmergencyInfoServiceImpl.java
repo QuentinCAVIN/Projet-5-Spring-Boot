@@ -23,22 +23,13 @@ public class EmergencyInfoServiceImpl implements EmergencyInfoService {
     //TODO: Placer les findEmergency dans le repository ou dans le service?
     public List<EmergencyInfo> findEmergencyInfoOfPeopleCoveredByFirestation(Integer station) {
 
-        List<EmergencyInfo> emergencyInfoOfPeopleCoveredByFirestation = new ArrayList<>();
-        for (EmergencyInfo emergencyInfo : getAllEmergencyInfo()) {
-            if (emergencyInfo.getStation() == station) {
-                emergencyInfoOfPeopleCoveredByFirestation.add(emergencyInfo);
-            }
-        }
+        List<EmergencyInfo> emergencyInfoOfPeopleCoveredByFirestation = emergencyInfoRepository.findAllByStation(station);
         return emergencyInfoOfPeopleCoveredByFirestation;
     }
 
     public List<EmergencyInfo> findEmergencyInfoOfPeopleByAddress(String address) {
-        List<EmergencyInfo> emergencyInfoOfPeopleAtThisAddress = new ArrayList<>();
-        for (EmergencyInfo emergencyInfo : getAllEmergencyInfo()) {
-            if (emergencyInfo.getAddress().equals(address)) {
-                    emergencyInfoOfPeopleAtThisAddress.add(emergencyInfo);
-            }
-        }
+
+        List<EmergencyInfo> emergencyInfoOfPeopleAtThisAddress = emergencyInfoRepository.findAllByAddress(address);
         return emergencyInfoOfPeopleAtThisAddress;
     }
 
@@ -49,18 +40,9 @@ public class EmergencyInfoServiceImpl implements EmergencyInfoService {
                 if (emergencyInfo.getAge() < 19) {
                     emergencyInfoOfChildrenAtThisAddress.add(emergencyInfo);
                 }
-                    /*if (!adultAtThisAddress.contains(emergencyInfo.getFirstName() + " " + emergencyInfo.getLastName()))
-                        adultAtThisAddress.add(emergencyInfo.getFirstName() + " " + emergencyInfo.getLastName());*/
         }
         return emergencyInfoOfChildrenAtThisAddress;
     }
-
-        /*Map <String,Object> endpointExpected = new LinkedHashMap<>();
-        endpointExpected.put("Enfants présents au " + address + ":", emergencyInfoOfChildAtThisAddress);
-        endpointExpected.put("Adultes présents à cette adresse:",adultAtThisAddress);
-
-        return endpointExpected;*/
-
 
     public List<String> findAdultByAddress(String address) {
         List<String> adultAtThisAddress = new ArrayList<>();
@@ -70,6 +52,21 @@ public class EmergencyInfoServiceImpl implements EmergencyInfoService {
             }
         }
         return adultAtThisAddress;
+    }
+
+    public List<EmergencyInfo> findEmergencyInfoByFirstNameAndLastName(String firstName, String lastName){
+        List<EmergencyInfo> emergencyInfoOfThisPersonWithNamesake = new ArrayList<>(); //TODO voir si necessaire de gérer les homonymes dans les endpoints précédents.
+        for (EmergencyInfo emergencyInfo : emergencyInfoRepository.getListOfAllEmergencyInfo()) {
+            if (emergencyInfo.getFirstName().equals(firstName) && emergencyInfo.getLastName().equals(lastName)) {
+                emergencyInfoOfThisPersonWithNamesake.add(emergencyInfo);
+            }
+        }
+        return emergencyInfoOfThisPersonWithNamesake;
+    }
+
+    public List<EmergencyInfo> findEmergencyInfoByCity(String city){
+        List<EmergencyInfo> emergencyInfoByCity = emergencyInfoRepository.findAllByCity(city);
+        return emergencyInfoByCity;
     }
 
     public int numberOfAdultCoveredByFirestation(Integer station) {

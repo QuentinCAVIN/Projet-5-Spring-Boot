@@ -18,6 +18,5 @@ public class AlertsApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		loader.loadData();
-		// TODO un loadData(path/de/mon/Json) serait-il plus a propos??
 	}
 }
