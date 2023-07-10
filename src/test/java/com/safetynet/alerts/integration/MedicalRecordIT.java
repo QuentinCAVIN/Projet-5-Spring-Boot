@@ -36,12 +36,7 @@ public class MedicalRecordIT {
     // TODO : Ajuster les attributs et le BeforeEach de la classe, beaucoups de champs inutile
     @BeforeEach
     private void setUpPerTest() throws Exception {
-        medicalRecord = new MedicalRecord();
-        medicalRecord.setFirstName(firstName);
-        medicalRecord.setLastName(lastName);
-        medicalRecord.setBirthdate(birthdate);
-        medicalRecord.setMedications(medications);
-        medicalRecord.setAllergies(allergies);
+
         medicalRecordRepository.deleteAll();
     }
 

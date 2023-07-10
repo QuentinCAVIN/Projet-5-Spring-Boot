@@ -48,6 +48,7 @@ public class FireStationControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"address\":\" "+ addressTest+"\",\"station\":\"9\" }"))
                 .andExpect((status().isCreated()));
+        //TODO Voir pour perfectionner le test avec un getFirestation
     }
 
     @Test
@@ -109,7 +110,7 @@ public class FireStationControllerTest {
                         // param pour répondre à @RequestParam("address")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"station\":\"6\" }"))
                 .andExpect((status().isNotFound()))
-                .andExpect(jsonPath("$.errorMessage").value("L'adresse \"Wrong address\" ne correspond à aucun centre de secours."));
+                .andExpect(jsonPath("$.errorMessage").value("L'adresse \"Wrong address\" ne correspond à aucun centre de secours.")); //TODO modifier le message d'erreur
     }
 
     @Test

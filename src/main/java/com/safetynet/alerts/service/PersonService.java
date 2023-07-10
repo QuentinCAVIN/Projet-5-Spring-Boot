@@ -14,6 +14,6 @@ public interface PersonService{
 
     public Optional<Person> getPerson (String firstName, String lastName);
 
-    void deletePerson(String firstName,String lastName);
+    public void deletePerson(String firstName,String lastName);
 }
 

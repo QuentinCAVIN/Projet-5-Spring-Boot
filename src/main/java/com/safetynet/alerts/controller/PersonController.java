@@ -33,7 +33,7 @@ public class PersonController {
     public ResponseEntity<Person> createPerson(@Valid @RequestBody Person person) {
 
         Optional<Person> personAlreadyPresent = personService.getPerson(person.getFirstName(), person.getLastName());
-        if (Optional.of(personAlreadyPresent).orElse(null).isPresent()) {
+        if (personAlreadyPresent.isPresent()) {
             throw new AlreadyPresentException(person.getFirstName() + " " + person.getLastName() +" est déjà enregistré: \""+ personAlreadyPresent.orElse(null) +"\"");
         }
         personService.savePerson(person);
