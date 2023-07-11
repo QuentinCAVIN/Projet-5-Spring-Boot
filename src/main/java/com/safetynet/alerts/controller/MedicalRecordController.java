@@ -6,6 +6,8 @@ import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.service.MedicalRecordService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,15 +30,21 @@ public class MedicalRecordController {
     @Autowired
     private MedicalRecordService medicalRecordService;
 
+    private static final Logger logger = LoggerFactory.getLogger(MedicalRecordController.class);
+
     //● ajouter un dossier médical ;
     @PostMapping("/medicalRecord")
     public ResponseEntity<MedicalRecord> createMedicalRecord(@Valid @RequestBody MedicalRecord medicalRecord) {
+        logger.info("une requête Http POST à été reçue à l'url /medicalRecord avec le body " + medicalRecord);
 
         Optional<MedicalRecord> medicalRecordAlreadyPresent = medicalRecordService.getMedicalRecord(medicalRecord.getFirstName(), medicalRecord.getLastName());
+
         if (Optional.of(medicalRecordAlreadyPresent).orElse(null).isPresent()) {
-            throw new AlreadyPresentException("Il y a déja un dossier médical associé à ce nom: \""+ medicalRecordAlreadyPresent.orElse(null) +"\"");
+            throw new AlreadyPresentException("Il y a déjà un dossier médical associé à ce nom: \""+ medicalRecordAlreadyPresent.orElse(null) +"\"");
         }
-        medicalRecordService.saveMedicalRecord(medicalRecord);
+
+        MedicalRecord medicalRecordSaved = medicalRecordService.saveMedicalRecord(medicalRecord);
+        logger.info("L'objet {} à été créé", medicalRecordSaved);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -44,6 +52,8 @@ public class MedicalRecordController {
     //prénom et le nom de famille ne changent pas) ;
     @PutMapping("/medicalRecord")
     public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName, @RequestBody MedicalRecord medicalRecord) {
+        logger.info("une requête Http PUT à été reçue à l'url /medicalRecord avec les paramètres {} {} et le body {}.", firstName , lastName, medicalRecord);
+
         Optional<MedicalRecord> medicalRecordAlreadyPresent = medicalRecordService.getMedicalRecord(firstName, lastName);
         if (medicalRecordAlreadyPresent.isPresent()) {
 
@@ -63,10 +73,10 @@ public class MedicalRecordController {
             // TODO voir si il serais mieux d'utiliser un for each pour vérifier que les attributs sont nul
             // https://stackoverflow.com/questions/1038308/how-to-get-the-list-of-all-attributes-of-a-java-object-using-beanutils-introspec
 
-            medicalRecordService.saveMedicalRecord(currentMedicalRecord);
-            return ResponseEntity.status(HttpStatus.OK).body(currentMedicalRecord);
+            MedicalRecord medicalRecordSaved = medicalRecordService.saveMedicalRecord(currentMedicalRecord);
+            logger.info("L'objet à été modifié: " +  medicalRecordSaved);
+            return ResponseEntity.status(HttpStatus.OK).body(medicalRecordSaved);
         } else {
-
             throw new NotFoundException("Il n'y a pas de dossier médical associé à " + firstName + " " + lastName + ".");
         }
     }
@@ -76,9 +86,11 @@ public class MedicalRecordController {
     @Transactional
     @DeleteMapping("/medicalRecord")
     public ResponseEntity deleteMedicalRecord(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
+        logger.info("une requête Http DELETE à été reçue à l'url /medicalRecord avec les paramètres {} {}.", firstName,lastName);
         Optional<MedicalRecord> medicalRecordAlreadyPresent = medicalRecordService.getMedicalRecord(firstName, lastName);
         if (medicalRecordAlreadyPresent.isPresent()) {
             medicalRecordService.deleteMedicalRecord(firstName,lastName);
+            logger.info("L'objet à été supprimé.");
             return ResponseEntity.noContent().build();
         } else {
             throw new NotFoundException ("Il n'y a pas de dossier médical associé à " + firstName + " " + lastName + ".");

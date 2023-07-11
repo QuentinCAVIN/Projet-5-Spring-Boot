@@ -81,6 +81,7 @@ public class FireStationControllerTest {
         fireStation.setStation(9);
         fireStation.setAddress(addressTest);
         when(fireStationService.getFireStation(addressTest)).thenReturn(Optional.of(fireStation));// c'est un Wrap?
+        when(fireStationService.saveFireStation(fireStation)).thenReturn(fireStation);
         // ci-dessus a mettre dans un BeforeEach
         mockMvc.perform(put("/firestation").param("address", addressTest)
                         // param pour répondre à @RequestParam("address")

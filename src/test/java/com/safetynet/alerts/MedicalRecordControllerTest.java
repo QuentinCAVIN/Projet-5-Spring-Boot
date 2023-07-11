@@ -68,13 +68,14 @@ public class MedicalRecordControllerTest {
         mockMvc.perform(post("/medicalRecord").contentType(MediaType.APPLICATION_JSON)
                 .content("{\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}"))
                 .andExpect(status().isConflict()).andExpect(jsonPath("$.errorMessage")
-                        .value("Il y a déja un dossier médical associé à ce nom: \"" + medicalRecord + "\""));;
+                        .value("Il y a déjà un dossier médical associé à ce nom: \"" + medicalRecord + "\""));;
     }
 
     @Test
     public void updateMedicalRecord_returnCode200_whenAMedicalRecordIsModified() throws Exception {
         medications = Arrays.asList("\"Normandy\"","\"Shepard\"");
         when(medicalRecordService.getMedicalRecord(firstName,lastName)).thenReturn(Optional.of(medicalRecord));
+        when(medicalRecordService.saveMedicalRecord((medicalRecord))).thenReturn(medicalRecord);
         mockMvc.perform(put("/medicalRecord")
                         .param("firstName",firstName).param("lastName",lastName)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"medications\":"+ medications +"}"))
