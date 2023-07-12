@@ -92,4 +92,57 @@ public class EmergencyInfoRepository {
         }
         return emergencyInfoByCity;
     }
+
+    public List<EmergencyInfo> findEmergencyinfoOfCHildrenByAddress(String address) {
+
+        List<EmergencyInfo> emergencyInfoOfChildrenAtThisAddress = new ArrayList<>();
+        for (EmergencyInfo emergencyInfo : findAllByAddress(address)) {
+            if (emergencyInfo.getAge() < 19) {
+                emergencyInfoOfChildrenAtThisAddress.add(emergencyInfo);
+            }
+        }
+        return emergencyInfoOfChildrenAtThisAddress;
+    }
+
+    public List<String> findAdultByAddress(String address) {
+        List<String> adultAtThisAddress = new ArrayList<>();
+        for (EmergencyInfo emergencyInfo : findAllByAddress(address)) {
+            if (emergencyInfo.getAge() > 18) {
+                adultAtThisAddress.add(emergencyInfo.getFirstName() + " " + emergencyInfo.getLastName());
+            }
+        }
+        return adultAtThisAddress;
+    }
+
+    public List<EmergencyInfo> findEmergencyInfoByFirstNameAndLastName(String firstName, String lastName) {
+        List<EmergencyInfo> emergencyInfoOfThisPersonWithNamesake = new ArrayList<>(); //TODO voir si necessaire de gérer les homonymes dans les endpoints précédents.
+        for (EmergencyInfo emergencyInfo : getListOfAllEmergencyInfo()) {
+            if (emergencyInfo.getFirstName().equals(firstName) && emergencyInfo.getLastName().equals(lastName)) {
+                emergencyInfoOfThisPersonWithNamesake.add(emergencyInfo);
+            }
+        }
+        return emergencyInfoOfThisPersonWithNamesake;
+    }
+
+    public int numberOfAdultCoveredByFirestation(Integer station) {
+        int numberOfAdult = 0;
+
+        for (EmergencyInfo emergencyInfo : findAllByStation(station)) {
+            if (emergencyInfo.getAge() > 18) {
+                numberOfAdult++;
+            }
+        }
+        return numberOfAdult;
+    }
+
+    public int numberOfChildrenCoveredByFirestation(Integer station) {
+        int numberOfChildren = 0;
+
+        for (EmergencyInfo emergencyInfo : findAllByStation(station)) {
+            if (emergencyInfo.getAge() < 19) {
+                numberOfChildren++;
+            }
+        }
+        return numberOfChildren;
+    }
 }

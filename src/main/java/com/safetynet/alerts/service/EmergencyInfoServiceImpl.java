@@ -22,73 +22,35 @@ public class EmergencyInfoServiceImpl implements EmergencyInfoService {
 
     //TODO: Placer les findEmergency dans le repository ou dans le service?
     public List<EmergencyInfo> findEmergencyInfoOfPeopleCoveredByFirestation(Integer station) {
-
-        List<EmergencyInfo> emergencyInfoOfPeopleCoveredByFirestation = emergencyInfoRepository.findAllByStation(station);
-        return emergencyInfoOfPeopleCoveredByFirestation;
+        return emergencyInfoRepository.findAllByStation(station);
     }
 
     public List<EmergencyInfo> findEmergencyInfoOfPeopleByAddress(String address) {
-
-        List<EmergencyInfo> emergencyInfoOfPeopleAtThisAddress = emergencyInfoRepository.findAllByAddress(address);
-        return emergencyInfoOfPeopleAtThisAddress;
+        return emergencyInfoRepository.findAllByAddress(address);
     }
 
     public List<EmergencyInfo> findEmergencyinfoOfCHildrenByAddress(String address) {
-
-        List<EmergencyInfo> emergencyInfoOfChildrenAtThisAddress = new ArrayList<>();
-        for (EmergencyInfo emergencyInfo : findEmergencyInfoOfPeopleByAddress(address)) {
-                if (emergencyInfo.getAge() < 19) {
-                    emergencyInfoOfChildrenAtThisAddress.add(emergencyInfo);
-                }
-        }
-        return emergencyInfoOfChildrenAtThisAddress;
+        return emergencyInfoRepository.findEmergencyinfoOfCHildrenByAddress(address);
     }
 
     public List<String> findAdultByAddress(String address) {
-        List<String> adultAtThisAddress = new ArrayList<>();
-        for (EmergencyInfo emergencyInfo : findEmergencyInfoOfPeopleByAddress(address)) {
-            if (emergencyInfo.getAge() > 18) {
-                adultAtThisAddress.add(emergencyInfo.getFirstName() + " " + emergencyInfo.getLastName());
-            }
-        }
-        return adultAtThisAddress;
+        return emergencyInfoRepository.findAdultByAddress(address);
     }
 
-    public List<EmergencyInfo> findEmergencyInfoByFirstNameAndLastName(String firstName, String lastName){
-        List<EmergencyInfo> emergencyInfoOfThisPersonWithNamesake = new ArrayList<>(); //TODO voir si necessaire de gérer les homonymes dans les endpoints précédents.
-        for (EmergencyInfo emergencyInfo : emergencyInfoRepository.getListOfAllEmergencyInfo()) {
-            if (emergencyInfo.getFirstName().equals(firstName) && emergencyInfo.getLastName().equals(lastName)) {
-                emergencyInfoOfThisPersonWithNamesake.add(emergencyInfo);
-            }
-        }
-        return emergencyInfoOfThisPersonWithNamesake;
+    public List<EmergencyInfo> findEmergencyInfoByFirstNameAndLastName(String firstName, String lastName) {
+        return emergencyInfoRepository.findEmergencyInfoByFirstNameAndLastName(firstName, lastName);
     }
 
-    public List<EmergencyInfo> findEmergencyInfoByCity(String city){
-        List<EmergencyInfo> emergencyInfoByCity = emergencyInfoRepository.findAllByCity(city);
-        return emergencyInfoByCity;
+    public List<EmergencyInfo> findEmergencyInfoByCity(String city) {
+        return emergencyInfoRepository.findAllByCity(city);
     }
 
     public int numberOfAdultCoveredByFirestation(Integer station) {
-        int numberOfAdult = 0;
-
-        for (EmergencyInfo emergencyInfo : findEmergencyInfoOfPeopleCoveredByFirestation(station)) {
-            if (emergencyInfo.getAge() > 18) {
-                numberOfAdult++;
-            }
-        }
-        return numberOfAdult;
+        return emergencyInfoRepository.numberOfAdultCoveredByFirestation(station);
     }
 
     public int numberOfChildrenCoveredByFirestation(Integer station) {
-        int numberOfChildren = 0;
-
-        for (EmergencyInfo emergencyInfo : findEmergencyInfoOfPeopleCoveredByFirestation(station)) {
-            if (emergencyInfo.getAge() < 19) {
-                numberOfChildren++;
-            }
-        }
-        return numberOfChildren;
+        return emergencyInfoRepository.numberOfChildrenCoveredByFirestation(station);
     }
 
     public List<EmergencyInfo> getAllEmergencyInfo() {
