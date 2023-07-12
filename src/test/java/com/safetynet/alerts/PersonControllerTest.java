@@ -90,6 +90,7 @@ public class PersonControllerTest {
     public void updatePerson_returnCode200_whenAPersonIsModified() throws Exception {
 
         when(personService.getPerson(firstName,lastName)).thenReturn(Optional.of(person));
+        when(personService.savePerson(person)).thenReturn(person);
         mockMvc.perform(put("/person")
                         .param("firstName",firstName).param("lastName",lastName)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"city\":\"Citadelle\"}"))

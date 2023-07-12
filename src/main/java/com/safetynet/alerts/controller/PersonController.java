@@ -16,6 +16,8 @@ import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.service.PersonService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +27,21 @@ import java.util.Optional;
 @RestController
 public class PersonController {
 
-        @Autowired
+    @Autowired
     private PersonService personService;
 
+    private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
     //● ajouter une nouvelle personne ;
     @PostMapping("/person")
     public ResponseEntity<Person> createPerson(@Valid @RequestBody Person person) {
+        logger.info("une requête Http POST à été reçue à l'url /person avec le body " + person);
 
         Optional<Person> personAlreadyPresent = personService.getPerson(person.getFirstName(), person.getLastName());
         if (personAlreadyPresent.isPresent()) {
             throw new AlreadyPresentException(person.getFirstName() + " " + person.getLastName() +" est déjà enregistré: \""+ personAlreadyPresent.orElse(null) +"\"");
         }
-        personService.savePerson(person);
+        Person personSaved = personService.savePerson(person);
+        logger.info("L'objet {} à été créé", personSaved);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -44,6 +49,8 @@ public class PersonController {
     //prénom et le nom de famille ne changent pas) ;
     @PutMapping("/person")
     public ResponseEntity<Person> updatePerson(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName, @RequestBody Person person) {
+        logger.info("une requête Http PUT à été reçue à l'url /person avec les paramètres {} {} et le body {}.", firstName, lastName, person);
+
         Optional<Person> personAlreadyPresent = personService.getPerson(firstName, lastName);
         if (personAlreadyPresent.isPresent()) {
 
@@ -71,9 +78,9 @@ public class PersonController {
             }
             // TODO voir si il serais mieux d'utiliser un for each pour vérifier que les attributs sont null
             // https://stackoverflow.com/questions/1038308/how-to-get-the-list-of-all-attributes-of-a-java-object-using-beanutils-introspec
-
-            personService.savePerson(currentPerson);
-            return ResponseEntity.status(HttpStatus.OK).body(currentPerson);
+            Person personSaved = personService.savePerson(currentPerson);
+            logger.info("L'objet à été modifié: " +  personSaved);
+            return ResponseEntity.status(HttpStatus.OK).body(personSaved);
         } else {
             throw new NotFoundException("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
         }
@@ -84,9 +91,11 @@ public class PersonController {
     @Transactional
     @DeleteMapping("/person")
     public ResponseEntity deletePerson(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
+        logger.info("une requête Http DELETE à été reçue à l'url /person avec les paramètre {} {}.", firstName, lastName);
         Optional<Person> personAlreadyPresent = personService.getPerson(firstName, lastName);
         if (personAlreadyPresent.isPresent()) {
             personService.deletePerson(firstName,lastName);
+            logger.info("L'objet à été supprimé.");
             return ResponseEntity.noContent().build();
         } else {
             throw new NotFoundException ("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
