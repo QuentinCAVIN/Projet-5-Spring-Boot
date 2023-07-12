@@ -20,7 +20,6 @@ public class EmergencyInfoServiceImpl implements EmergencyInfoService {
     @Autowired
     EmergencyInfoRepository emergencyInfoRepository;
 
-    //TODO: Placer les findEmergency dans le repository ou dans le service?
     public List<EmergencyInfo> findEmergencyInfoOfPeopleCoveredByFirestation(Integer station) {
         return emergencyInfoRepository.findAllByStation(station);
     }
