@@ -4,11 +4,6 @@ import com.safetynet.alerts.model.Person;
 import java.util.Optional;
 
 public interface PersonService{
-    public Optional<Person> getPerson(final Long id);
-
-    public Iterable<Person> getPersons();
-
-    public void deletePerson(final Long id);
 
     public Person savePerson(Person person);
 
@@ -16,4 +11,3 @@ public interface PersonService{
 
     public void deletePerson(String firstName,String lastName);
 }
-
