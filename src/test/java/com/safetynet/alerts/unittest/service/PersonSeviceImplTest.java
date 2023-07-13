@@ -1,4 +1,4 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.unittest.service;
 
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
@@ -41,18 +41,18 @@ public class PersonSeviceImplTest {
 
     @Test
     public void getPersonTest() {
-        when(personRepository.findByFirstNameAndLastName("a","a")).thenReturn(Optional.of(personA));
-        personService.getPerson("a","a");
+        when(personRepository.findByFirstNameAndLastName("a", "a")).thenReturn(Optional.of(personA));
+        personService.getPerson("a", "a");
 
-        verify(personRepository, Mockito.times(1)).findByFirstNameAndLastName("a","a");
-        assertThat(personRepository.findByFirstNameAndLastName("a","a")).isEqualTo(Optional.of(personA));
+        verify(personRepository, Mockito.times(1)).findByFirstNameAndLastName("a", "a");
+        assertThat(personRepository.findByFirstNameAndLastName("a", "a")).isEqualTo(Optional.of(personA));
     }
 
     @Test
     public void deletePersonTest() {
-        personService.deletePerson("a","a");
+        personService.deletePerson("a", "a");
 
-        verify(personRepository, Mockito.times(1)).deleteByFirstNameAndLastName("a","a");
+        verify(personRepository, Mockito.times(1)).deleteByFirstNameAndLastName("a", "a");
     }
 
     @Test
@@ -67,9 +67,9 @@ public class PersonSeviceImplTest {
 
     @Test
     public void getPersonTestGoesWrong() {
-        when(personRepository.findByFirstNameAndLastName("a","a")).thenReturn(null);
+        when(personRepository.findByFirstNameAndLastName("a", "a")).thenReturn(null);
 
-        Optional<Person> person = personService.getPerson("a","a");
+        Optional<Person> person = personService.getPerson("a", "a");
 
         assertThat(person).isEqualTo(null);
     }

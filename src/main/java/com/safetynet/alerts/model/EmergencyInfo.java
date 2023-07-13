@@ -38,11 +38,11 @@ public class EmergencyInfo {
 
     public void setAge() {
 
-        if (birthdate != null){
+        if (birthdate != null) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-            LocalDate birthDate = LocalDate.parse(birthdate,formatter);
+            LocalDate birthDate = LocalDate.parse(birthdate, formatter);
             LocalDate currentDate = LocalDate.now();
-            this.age = ((Period.between(birthDate,currentDate)).getYears());
+            this.age = ((Period.between(birthDate, currentDate)).getYears());
         }
     }
 }

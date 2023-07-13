@@ -3,6 +3,7 @@ package com.safetynet.alerts.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+
 import java.util.List;
 
 @Data //Lombock pour éviter getters et setters

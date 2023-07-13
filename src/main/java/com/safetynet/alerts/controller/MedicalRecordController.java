@@ -40,7 +40,7 @@ public class MedicalRecordController {
         Optional<MedicalRecord> medicalRecordAlreadyPresent = medicalRecordService.getMedicalRecord(medicalRecord.getFirstName(), medicalRecord.getLastName());
 
         if (Optional.of(medicalRecordAlreadyPresent).orElse(null).isPresent()) {
-            throw new AlreadyPresentException("Il y a déjà un dossier médical associé à ce nom: \""+ medicalRecordAlreadyPresent.orElse(null) +"\"");
+            throw new AlreadyPresentException("Il y a déjà un dossier médical associé à ce nom: \"" + medicalRecordAlreadyPresent.orElse(null) + "\"");
         }
 
         MedicalRecord medicalRecordSaved = medicalRecordService.saveMedicalRecord(medicalRecord);
@@ -52,7 +52,7 @@ public class MedicalRecordController {
     //prénom et le nom de famille ne changent pas) ;
     @PutMapping("/medicalRecord")
     public ResponseEntity<MedicalRecord> updateMedicalRecord(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName, @RequestBody MedicalRecord medicalRecord) {
-        logger.info("une requête Http PUT à été reçue à l'url /medicalRecord avec les paramètres {} {} et le body {}.", firstName , lastName, medicalRecord);
+        logger.info("une requête Http PUT à été reçue à l'url /medicalRecord avec les paramètres {} {} et le body {}.", firstName, lastName, medicalRecord);
 
         Optional<MedicalRecord> medicalRecordAlreadyPresent = medicalRecordService.getMedicalRecord(firstName, lastName);
         if (medicalRecordAlreadyPresent.isPresent()) {
@@ -74,7 +74,7 @@ public class MedicalRecordController {
             // https://stackoverflow.com/questions/1038308/how-to-get-the-list-of-all-attributes-of-a-java-object-using-beanutils-introspec
 
             MedicalRecord medicalRecordSaved = medicalRecordService.saveMedicalRecord(currentMedicalRecord);
-            logger.info("L'objet à été modifié: " +  medicalRecordSaved);
+            logger.info("L'objet à été modifié: " + medicalRecordSaved);
             return ResponseEntity.status(HttpStatus.OK).body(medicalRecordSaved);
         } else {
             throw new NotFoundException("Il n'y a pas de dossier médical associé à " + firstName + " " + lastName + ".");
@@ -86,14 +86,15 @@ public class MedicalRecordController {
     @Transactional
     @DeleteMapping("/medicalRecord")
     public ResponseEntity deleteMedicalRecord(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
-        logger.info("une requête Http DELETE à été reçue à l'url /medicalRecord avec les paramètres {} {}.", firstName,lastName);
+        logger.info("une requête Http DELETE à été reçue à l'url /medicalRecord avec les paramètres {} {}.", firstName, lastName);
+
         Optional<MedicalRecord> medicalRecordAlreadyPresent = medicalRecordService.getMedicalRecord(firstName, lastName);
         if (medicalRecordAlreadyPresent.isPresent()) {
-            medicalRecordService.deleteMedicalRecord(firstName,lastName);
+            medicalRecordService.deleteMedicalRecord(firstName, lastName);
             logger.info("L'objet à été supprimé.");
             return ResponseEntity.noContent().build();
         } else {
-            throw new NotFoundException ("Il n'y a pas de dossier médical associé à " + firstName + " " + lastName + ".");
+            throw new NotFoundException("Il n'y a pas de dossier médical associé à " + firstName + " " + lastName + ".");
         }
     }
 }

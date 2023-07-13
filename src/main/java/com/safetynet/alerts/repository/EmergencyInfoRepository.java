@@ -60,33 +60,33 @@ public class EmergencyInfoRepository {
         return listOfAllEmergencyInfo;
     }
 
-    public List<EmergencyInfo> findAllByStation (Integer station){
+    public List<EmergencyInfo> findAllByStation(Integer station) {
         fileEmergencyInfo();
-        List<EmergencyInfo> emergencyInfoByStation= new ArrayList<>();
-        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo){
-            if (emergencyInfo.getStation().equals(station)){
+        List<EmergencyInfo> emergencyInfoByStation = new ArrayList<>();
+        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo) {
+            if (emergencyInfo.getStation().equals(station)) {
                 emergencyInfoByStation.add(emergencyInfo);
             }
         }
         return emergencyInfoByStation;
     }
 
-    public List<EmergencyInfo> findAllByAddress (String address){
+    public List<EmergencyInfo> findAllByAddress(String address) {
         fileEmergencyInfo();
         List<EmergencyInfo> emergencyInfoByAddress = new ArrayList<>();
-        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo){
-            if (emergencyInfo.getAddress().equals(address)){
+        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo) {
+            if (emergencyInfo.getAddress().equals(address)) {
                 emergencyInfoByAddress.add(emergencyInfo);
             }
         }
         return emergencyInfoByAddress;
     }
 
-    public List<EmergencyInfo> findAllByCity (String city){
+    public List<EmergencyInfo> findAllByCity(String city) {
         fileEmergencyInfo();
         List<EmergencyInfo> emergencyInfoByCity = new ArrayList<>();
-        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo){
-            if (emergencyInfo.getCity().equals(city)){
+        for (EmergencyInfo emergencyInfo : listOfAllEmergencyInfo) {
+            if (emergencyInfo.getCity().equals(city)) {
                 emergencyInfoByCity.add(emergencyInfo);
             }
         }

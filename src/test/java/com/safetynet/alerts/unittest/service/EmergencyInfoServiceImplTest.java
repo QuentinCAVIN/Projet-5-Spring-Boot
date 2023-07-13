@@ -1,4 +1,4 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.unittest.service;
 
 import com.safetynet.alerts.model.EmergencyInfo;
 import com.safetynet.alerts.repository.EmergencyInfoRepository;
@@ -33,7 +33,7 @@ public class EmergencyInfoServiceImplTest {
     List<EmergencyInfo> listOfEmergencyInfoExpected;
 
     @BeforeEach
-    public void setup(){
+    public void setup() {
         emergencyInfoOfPersonA = new EmergencyInfo();
         emergencyInfoOfPersonA.setFirstName("a");
         emergencyInfoOfPersonA.setLastName("a");
@@ -63,61 +63,61 @@ public class EmergencyInfoServiceImplTest {
         emergencyInfoOfPersonB.setAllergies(new ArrayList<String>());
         emergencyInfoOfPersonB.setStation(1);
 
-        listOfEmergencyInfoExpected = new ArrayList<>(Arrays.asList(emergencyInfoOfPersonA,emergencyInfoOfPersonB));
+        listOfEmergencyInfoExpected = new ArrayList<>(Arrays.asList(emergencyInfoOfPersonA, emergencyInfoOfPersonB));
 
         when(emergencyInfoRepository.findAllByStation(1)).thenReturn(listOfEmergencyInfoExpected);
         when(emergencyInfoRepository.findAllByAddress("address")).thenReturn(listOfEmergencyInfoExpected);
     }
 
     @Test
-    public void findEmergencyInfoOfPeopleCoveredByFirestationTest(){
+    public void findEmergencyInfoOfPeopleCoveredByFirestationTest() {
         emergencyInfoService.findEmergencyInfoOfPeopleCoveredByFirestation(1);
 
-        verify(emergencyInfoRepository,Mockito.times(1)).findAllByStation(any());
+        verify(emergencyInfoRepository, Mockito.times(1)).findAllByStation(any());
         Assertions.assertThat(emergencyInfoRepository.findAllByStation(1)).isEqualTo(listOfEmergencyInfoExpected);
     }
 
     @Test
-    public void findEmergencyInfoOfPeopleByAddressTest(){
+    public void findEmergencyInfoOfPeopleByAddressTest() {
         emergencyInfoService.findEmergencyInfoOfPeopleByAddress("address");
 
-        verify(emergencyInfoRepository,Mockito.times(1)).findAllByAddress("address");
+        verify(emergencyInfoRepository, Mockito.times(1)).findAllByAddress("address");
         Assertions.assertThat(emergencyInfoRepository.findAllByAddress("address")).isEqualTo(listOfEmergencyInfoExpected);
     }
 
     @Test
-    public void findEmergencyinfoOfCHildrenByAddressTest(){
+    public void findEmergencyinfoOfCHildrenByAddressTest() {
         when(emergencyInfoRepository.findEmergencyinfoOfCHildrenByAddress("address")).thenReturn(listOfEmergencyInfoExpected);
 
         emergencyInfoService.findEmergencyinfoOfCHildrenByAddress("address");
 
-        verify(emergencyInfoRepository,Mockito.times(1)).findEmergencyinfoOfCHildrenByAddress("address");
+        verify(emergencyInfoRepository, Mockito.times(1)).findEmergencyinfoOfCHildrenByAddress("address");
         Assertions.assertThat(emergencyInfoRepository.findEmergencyinfoOfCHildrenByAddress("address")).isEqualTo(listOfEmergencyInfoExpected);
     }
 
     @Test
-    public void findAdultByAddressTest(){
-        List<String> adultListExpected = new ArrayList<>(Arrays.asList("AdultA","AdultB"));
+    public void findAdultByAddressTest() {
+        List<String> adultListExpected = new ArrayList<>(Arrays.asList("AdultA", "AdultB"));
         when(emergencyInfoRepository.findAdultByAddress("address")).thenReturn(adultListExpected);
 
         emergencyInfoService.findAdultByAddress("address");
 
-        verify(emergencyInfoRepository,Mockito.times(1)).findAdultByAddress("address");
+        verify(emergencyInfoRepository, Mockito.times(1)).findAdultByAddress("address");
         Assertions.assertThat(emergencyInfoRepository.findAdultByAddress("address")).isEqualTo(adultListExpected);
     }
 
     @Test
-    public void findEmergencyInfoByFirstNameAndLastNameTest(){
-        when(emergencyInfoRepository.findEmergencyInfoByFirstNameAndLastName("firstname","lastname")).thenReturn(listOfEmergencyInfoExpected);
+    public void findEmergencyInfoByFirstNameAndLastNameTest() {
+        when(emergencyInfoRepository.findEmergencyInfoByFirstNameAndLastName("firstname", "lastname")).thenReturn(listOfEmergencyInfoExpected);
 
-        emergencyInfoService.findEmergencyInfoByFirstNameAndLastName("firstname","lastname");
+        emergencyInfoService.findEmergencyInfoByFirstNameAndLastName("firstname", "lastname");
 
-        verify(emergencyInfoRepository,Mockito.times(1)).findEmergencyInfoByFirstNameAndLastName("firstname","lastname");
-        Assertions.assertThat(emergencyInfoRepository.findEmergencyInfoByFirstNameAndLastName("firstname","lastname")).isEqualTo(listOfEmergencyInfoExpected);
+        verify(emergencyInfoRepository, Mockito.times(1)).findEmergencyInfoByFirstNameAndLastName("firstname", "lastname");
+        Assertions.assertThat(emergencyInfoRepository.findEmergencyInfoByFirstNameAndLastName("firstname", "lastname")).isEqualTo(listOfEmergencyInfoExpected);
     }
 
     @Test
-    public void findEmergencyInfoByCityTest(){
+    public void findEmergencyInfoByCityTest() {
         when(emergencyInfoRepository.findAllByCity("city")).thenReturn(listOfEmergencyInfoExpected);
 
         emergencyInfoService.findEmergencyInfoByCity("city");
@@ -127,7 +127,7 @@ public class EmergencyInfoServiceImplTest {
     }
 
     @Test
-    public void numberOfAdultCoveredByFirestationTest(){
+    public void numberOfAdultCoveredByFirestationTest() {
         int numberOfAdultsExpected = 666;
         when(emergencyInfoRepository.numberOfAdultCoveredByFirestation(1)).thenReturn(numberOfAdultsExpected);
 
@@ -136,8 +136,9 @@ public class EmergencyInfoServiceImplTest {
         verify(emergencyInfoRepository, Mockito.times(1)).numberOfAdultCoveredByFirestation(1);
         Assertions.assertThat(emergencyInfoRepository.numberOfAdultCoveredByFirestation(1)).isEqualTo(numberOfAdultsExpected);
     }
+
     @Test
-    public void numberOfChildrenCoveredByFirestationTest(){
+    public void numberOfChildrenCoveredByFirestationTest() {
         int numberOfChildrenExpected = 1234;
         when(emergencyInfoRepository.numberOfChildrenCoveredByFirestation(1)).thenReturn(numberOfChildrenExpected);
 
@@ -148,7 +149,7 @@ public class EmergencyInfoServiceImplTest {
     }
 
     @Test
-    public void getAllEmergencyInfoTest(){
+    public void getAllEmergencyInfoTest() {
         when(emergencyInfoRepository.getListOfAllEmergencyInfo()).thenReturn(listOfEmergencyInfoExpected);
 
         emergencyInfoService.getAllEmergencyInfo();
@@ -158,7 +159,7 @@ public class EmergencyInfoServiceImplTest {
     }
 
     @Test
-    public void getEmergencyInfoByAddressTest(){
+    public void getEmergencyInfoByAddressTest() {
         emergencyInfoService.getEmergencyInfoByAddress("address");
 
         verify(emergencyInfoRepository, Mockito.times(1)).findAllByAddress("address");
@@ -166,7 +167,7 @@ public class EmergencyInfoServiceImplTest {
     }
 
     @Test
-    public void getEmergencyInfoByStationTest(){
+    public void getEmergencyInfoByStationTest() {
         emergencyInfoService.getEmergencyInfoByStation(1);
 
         verify(emergencyInfoRepository, Mockito.times(1)).findAllByStation(1);

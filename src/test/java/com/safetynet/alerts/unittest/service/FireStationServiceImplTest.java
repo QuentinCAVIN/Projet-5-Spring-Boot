@@ -1,4 +1,4 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.unittest.service;
 
 import com.safetynet.alerts.model.FireStation;
 import com.safetynet.alerts.repository.FireStationRepository;
@@ -28,7 +28,6 @@ public class FireStationServiceImplTest {
     private FireStation fireStationA;
     private FireStation fireStationB;
     List<FireStation> listOfFireStationExpected;
-
     List<String> listOfAddressesExpected;
 
     @BeforeEach
@@ -43,7 +42,7 @@ public class FireStationServiceImplTest {
 
         listOfFireStationExpected = new ArrayList<>(Arrays.asList(fireStationA, fireStationB));
 
-        listOfAddressesExpected = new ArrayList<>(Arrays.asList(fireStationA.getAddress(),fireStationB.getAddress()));
+        listOfAddressesExpected = new ArrayList<>(Arrays.asList(fireStationA.getAddress(), fireStationB.getAddress()));
     }
 
     @Test
@@ -97,7 +96,7 @@ public class FireStationServiceImplTest {
     public void getAddressesCoveredByStationTestGoesWrong() {
         when(fireStationRepository.findAllByStation(1)).thenReturn(Collections.emptyList());
 
-        List<String> list =fireStationService.getAddressesCoveredByStation(1);
+        List<String> list = fireStationService.getAddressesCoveredByStation(1);
 
         assertThat(list).isEqualTo(Collections.emptyList());
     }
@@ -108,11 +107,11 @@ public class FireStationServiceImplTest {
         when(fireStationRepository.findAllByStation(1)).thenReturn(List.of(fireStationA));
         when(fireStationRepository.findAllByStation(2)).thenReturn(List.of(fireStationB));
 
-        fireStationService.getAddressesCoveredByStations(Arrays.asList(1,2));
+        fireStationService.getAddressesCoveredByStations(Arrays.asList(1, 2));
 
         verify(fireStationRepository, Mockito.times(1)).findAllByStation(1);
         verify(fireStationRepository, Mockito.times(1)).findAllByStation(2);
-        assertThat(fireStationService.getAddressesCoveredByStations(Arrays.asList(1,2)))
+        assertThat(fireStationService.getAddressesCoveredByStations(Arrays.asList(1, 2)))
                 .isEqualTo(listOfAddressesExpected);
     }
 
@@ -120,11 +119,11 @@ public class FireStationServiceImplTest {
     public void getAddressesCoveredByStationsTestGoesWrong() {
         when(fireStationRepository.findAllByStation(any())).thenReturn(Collections.emptyList());
 
-        fireStationService.getAddressesCoveredByStations(Arrays.asList(1,2));
+        fireStationService.getAddressesCoveredByStations(Arrays.asList(1, 2));
 
         verify(fireStationRepository, Mockito.times(1)).findAllByStation(1);
         verify(fireStationRepository, Mockito.times(1)).findAllByStation(2);
-        assertThat(fireStationService.getAddressesCoveredByStations(Arrays.asList(1,2)))
+        assertThat(fireStationService.getAddressesCoveredByStations(Arrays.asList(1, 2)))
                 .isEqualTo(Collections.emptyList());
     }
 }

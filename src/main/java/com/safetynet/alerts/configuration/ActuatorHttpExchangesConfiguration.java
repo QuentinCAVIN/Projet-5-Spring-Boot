@@ -8,10 +8,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ActuatorHttpExchangesConfiguration {
     @Bean
-    public HttpExchangeRepository httpTraceRepository()
-    {
+    public HttpExchangeRepository httpTraceRepository() {
         return new InMemoryHttpExchangeRepository();
     }
 }
 
-//https://www.appsdeveloperblog.com/how-to-enable-actuators-httptrace-in-spring-boot-3/?utm_content=cmp-true
+//Guide sur https://www.appsdeveloperblog.com/how-to-enable-actuators-httptrace-in-spring-boot-3/?utm_content=cmp-true

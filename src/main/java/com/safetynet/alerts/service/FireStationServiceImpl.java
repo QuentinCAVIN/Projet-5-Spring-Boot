@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @Data
 @Service
-public class FireStationServiceImpl implements FireStationService{
+public class FireStationServiceImpl implements FireStationService {
 
     @Autowired
     private FireStationRepository fireStationRepository;
@@ -25,16 +25,18 @@ public class FireStationServiceImpl implements FireStationService{
         return fireStationRepository.findAll();
     }
 
-    public void deleteFireStation(final String address) {fireStationRepository.deleteByAddress(address);}
+    public void deleteFireStation(final String address) {
+        fireStationRepository.deleteByAddress(address);
+    }
 
     public FireStation saveFireStation(FireStation fireStation) {
         return fireStationRepository.save(fireStation);
     }
 
-    public List<String> getAddressesCoveredByStation(Integer station){
+    public List<String> getAddressesCoveredByStation(Integer station) {
 
         List<String> addressCoveredByStation = new ArrayList<>();
-        for (FireStation fireStation : fireStationRepository.findAllByStation(station)){
+        for (FireStation fireStation : fireStationRepository.findAllByStation(station)) {
             String address = fireStation.getAddress();
             addressCoveredByStation.add(address);
         }
@@ -42,7 +44,7 @@ public class FireStationServiceImpl implements FireStationService{
         return addressCoveredByStation;
     }
 
-    public List<String> getAddressesCoveredByStations(List<Integer>stations){
+    public List<String> getAddressesCoveredByStations(List<Integer> stations) {
         List<String> allAddresses = new ArrayList<>();
         for (Integer station : stations) {
             List<String> addresses = getAddressesCoveredByStation(station);
@@ -50,6 +52,7 @@ public class FireStationServiceImpl implements FireStationService{
                 allAddresses.add(address);
             }
         }
-        return  allAddresses;
+
+        return allAddresses;
     }
 }

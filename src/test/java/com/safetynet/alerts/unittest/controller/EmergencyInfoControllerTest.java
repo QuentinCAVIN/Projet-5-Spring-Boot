@@ -1,4 +1,4 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.unittest.controller;
 
 import com.safetynet.alerts.controller.EmergencyInfoController;
 import com.safetynet.alerts.model.EmergencyInfo;
@@ -124,13 +124,14 @@ public class EmergencyInfoControllerTest {
                 .andExpect(jsonPath("$.['Adultes présents à cette adresse:']").value(adultAtThisAddress));
     }
 
-   @Test
+    @Test
     public void findChildrenByAddress_returnCode404_whenAnUnknownAddressIsEnter() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/childAlert").param("address", "10 rue")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isNotFound()))
                 .andExpect(jsonPath("$.errorMessage").value("Le 10 rue ne correspond à aucune adresse enregistrée."));
     }
+
     @Test
     public void findPhoneNumbersServedByFirestation_ReturnExpectedResult_WhenEndpointIsCalled() throws Exception {
         EmergencyInfo phoneNumberA = new EmergencyInfo();
@@ -153,7 +154,7 @@ public class EmergencyInfoControllerTest {
     }
 
     @Test
-    public void  findPhoneNumbersServedByFirestation_returnCode404_whenAnUnknowNumberOfFireStationIsEnter() throws Exception {
+    public void findPhoneNumbersServedByFirestation_returnCode404_whenAnUnknowNumberOfFireStationIsEnter() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/phoneAlert").param("firestation", "9")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isNotFound()))
@@ -206,7 +207,7 @@ public class EmergencyInfoControllerTest {
     }
 
     @Test
-    public void findEmergencyInformationByFireStationsCoverage_ReturnExpectedResult_WhenEndpointIsCalled()throws Exception {
+    public void findEmergencyInformationByFireStationsCoverage_ReturnExpectedResult_WhenEndpointIsCalled() throws Exception {
         EmergencyInfo emergencyInfoOfPersonA = new EmergencyInfo();
         emergencyInfoOfPersonA.setFirstName("a");
         emergencyInfoOfPersonA.setLastName("a");
@@ -245,7 +246,7 @@ public class EmergencyInfoControllerTest {
     }
 
     @Test
-    public void findEmergencyInformationByPerson_ReturnExpectedResult_WhenEndpointIsCalled()throws Exception {
+    public void findEmergencyInformationByPerson_ReturnExpectedResult_WhenEndpointIsCalled() throws Exception {
         EmergencyInfo emergencyInfoOfPersonA = new EmergencyInfo();
         emergencyInfoOfPersonA.setFirstName("a");
         emergencyInfoOfPersonA.setLastName("a");
@@ -256,11 +257,11 @@ public class EmergencyInfoControllerTest {
 
         List<EmergencyInfo> emergencyInfoOfAA = (new ArrayList<>(Arrays.asList(emergencyInfoOfPersonA)));
 
-        when(emergencyInfoService.findEmergencyInfoByFirstNameAndLastName("a","a")).thenReturn(emergencyInfoOfAA);
+        when(emergencyInfoService.findEmergencyInfoByFirstNameAndLastName("a", "a")).thenReturn(emergencyInfoOfAA);
         when(emergencyInfoService.findEmergencyInfoOfPeopleByAddress("address A")).thenReturn(emergencyInfoOfAA);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/personInfo")
-                        .param("firstName", "a").param("lastName","a")
+                        .param("firstName", "a").param("lastName", "a")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].firstName").value(emergencyInfoOfPersonA.getFirstName()))
@@ -271,20 +272,20 @@ public class EmergencyInfoControllerTest {
     @Test
     public void findEmergencyInformationByPerson_returnCode404_whenAWrongNameIsEnter() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/personInfo")
-                        .param("firstName", "a").param("lastName","b")
+                        .param("firstName", "a").param("lastName", "b")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isNotFound()))
                 .andExpect(jsonPath("$.errorMessage").value("Il n'y a pas de données associé à a b."));
     }
 
     @Test
-    public void findEmailByCity_ReturnExpectedResult_WhenEndpointIsCalled()throws Exception {
+    public void findEmailByCity_ReturnExpectedResult_WhenEndpointIsCalled() throws Exception {
         EmergencyInfo emergencyInfoOfPersonA = new EmergencyInfo();
         emergencyInfoOfPersonA.setEmail("a");
         EmergencyInfo emergencyInfoOfPersonB = new EmergencyInfo();
         emergencyInfoOfPersonA.setEmail("b");
 
-        List<EmergencyInfo> emailOfcity = (new ArrayList<>(Arrays.asList(emergencyInfoOfPersonA,emergencyInfoOfPersonB)));
+        List<EmergencyInfo> emailOfcity = (new ArrayList<>(Arrays.asList(emergencyInfoOfPersonA, emergencyInfoOfPersonB)));
 
         when(emergencyInfoService.findEmergencyInfoByCity("city")).thenReturn(emailOfcity);
 

@@ -1,4 +1,4 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.unittest.service;
 
 import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.repository.MedicalRecordRepository;
@@ -34,24 +34,24 @@ public class MedicalRecordServiceImplTest {
         medicalRecordA.setFirstName("a");
         medicalRecordA.setLastName("a");
         medicalRecordA.setBirthdate("a");
-        medicalRecordA.setMedications(Arrays.asList("medicationA","medicationB"));
-        medicalRecordA.setAllergies(Arrays.asList("allergieA","allergieB"));
+        medicalRecordA.setMedications(Arrays.asList("medicationA", "medicationB"));
+        medicalRecordA.setAllergies(Arrays.asList("allergieA", "allergieB"));
     }
 
     @Test
     public void getMedicalRecordTest() {
-        when(medicalRecordRepository.findByFirstNameAndLastName("a","a")).thenReturn(Optional.of(medicalRecordA));
-        medicalRecordService.getMedicalRecord("a","a");
+        when(medicalRecordRepository.findByFirstNameAndLastName("a", "a")).thenReturn(Optional.of(medicalRecordA));
+        medicalRecordService.getMedicalRecord("a", "a");
 
-        verify(medicalRecordRepository, Mockito.times(1)).findByFirstNameAndLastName("a","a");
-        assertThat(medicalRecordRepository.findByFirstNameAndLastName("a","a")).isEqualTo(Optional.of(medicalRecordA));
+        verify(medicalRecordRepository, Mockito.times(1)).findByFirstNameAndLastName("a", "a");
+        assertThat(medicalRecordRepository.findByFirstNameAndLastName("a", "a")).isEqualTo(Optional.of(medicalRecordA));
     }
 
     @Test
     public void deleteMedicalRecordTest() {
-        medicalRecordService.deleteMedicalRecord("a","a");
+        medicalRecordService.deleteMedicalRecord("a", "a");
 
-        verify(medicalRecordRepository, Mockito.times(1)).deleteByFirstNameAndLastName("a","a");
+        verify(medicalRecordRepository, Mockito.times(1)).deleteByFirstNameAndLastName("a", "a");
     }
 
     @Test
@@ -66,9 +66,9 @@ public class MedicalRecordServiceImplTest {
 
     @Test
     public void getMedicalRecordTestGoesWrong() {
-        when(medicalRecordRepository.findByFirstNameAndLastName("a","a")).thenReturn(null);
+        when(medicalRecordRepository.findByFirstNameAndLastName("a", "a")).thenReturn(null);
 
-        Optional<MedicalRecord> medicalRecord = medicalRecordService.getMedicalRecord("a","a");
+        Optional<MedicalRecord> medicalRecord = medicalRecordService.getMedicalRecord("a", "a");
 
         assertThat(medicalRecord).isEqualTo(null);
     }

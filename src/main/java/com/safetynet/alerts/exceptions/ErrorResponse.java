@@ -1,6 +1,7 @@
 package com.safetynet.alerts.exceptions;
 
 import lombok.Data;
+
 import java.time.LocalDateTime;
 
 @Data

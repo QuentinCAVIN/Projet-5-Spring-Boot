@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 
 public class EmergencyInfoIT {
-
     @Autowired
     private MockMvc mockMvc;
     @Autowired
@@ -36,16 +35,15 @@ public class EmergencyInfoIT {
     private LoadDataService loadDataService;
 
     @BeforeEach
-    public void setup(){
-         fireStationRepository.deleteAll();
-         personRepository.deleteAll();
-         medicalRecordRepository.deleteAll();
+    public void setup() {
+        fireStationRepository.deleteAll();
+        personRepository.deleteAll();
+        medicalRecordRepository.deleteAll();
         loadDataService.loadData();
     }
 
     @Test
     public void findPersonsCoveredByFireStationWithSucces() throws Exception {
-
         mockMvc.perform(MockMvcRequestBuilders.get("/firestation").param("stationNumber", "1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -67,8 +65,8 @@ public class EmergencyInfoIT {
 
     @Test
     public void findChildrenByAddressWithSucces() throws Exception {
-
         String param = "1509 Culver St";
+
         mockMvc.perform(MockMvcRequestBuilders.get("/childAlert").param("address", param)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -80,8 +78,8 @@ public class EmergencyInfoIT {
 
     @Test
     public void findChildrenByAddressWithWrongAddress() throws Exception {
-
         String param = "Wrong address";
+
         mockMvc.perform(MockMvcRequestBuilders.get("/childAlert").param("address", param)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isNotFound()))
@@ -90,7 +88,6 @@ public class EmergencyInfoIT {
 
     @Test
     public void findPhoneNumbersServedByFirestationWithSucces() throws Exception {
-
         mockMvc.perform(MockMvcRequestBuilders.get("/phoneAlert").param("firestation", "4")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(jsonPath("$[*].phone")
@@ -108,6 +105,7 @@ public class EmergencyInfoIT {
     @Test
     public void findEmergencyInformationByAddressWithSucces() throws Exception {
         String param = "947 E. Rose Dr";
+
         mockMvc.perform(MockMvcRequestBuilders.get("/fire").param("address", param)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -130,7 +128,6 @@ public class EmergencyInfoIT {
 
     @Test
     public void findEmergencyInformationByFireStationsCoverageWithSucces() throws Exception {
-
         mockMvc.perform(MockMvcRequestBuilders.get("/flood/stations").param("stations", "2,3")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -152,7 +149,6 @@ public class EmergencyInfoIT {
 
     @Test
     public void findEmergencyInformationByPersonWithSucces() throws Exception {
-
         mockMvc.perform(MockMvcRequestBuilders.get("/personInfo")
                         .param("firstName", "Tony").param("lastName", "Cooper")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -167,16 +163,14 @@ public class EmergencyInfoIT {
     @Test
     public void findEmergencyInformationByPersonWithAWrongName() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/personInfo")
-                        .param("firstName", "Tony").param("lastName","Coper")
+                        .param("firstName", "Tony").param("lastName", "Coper")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect((status().isNotFound()))
                 .andExpect(jsonPath("$.errorMessage").value("Il n'y a pas de données associé à Tony Coper."));
     }
 
     @Test
-    public void findEmailByCityWithSucces()throws Exception {
-
-
+    public void findEmailByCityWithSucces() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/communityEmail")
                         .param("city", "Culver")
                         .contentType(MediaType.APPLICATION_JSON))

@@ -1,10 +1,10 @@
 package com.safetynet.alerts.service;
 
 import com.safetynet.alerts.model.MedicalRecord;
+
 import java.util.Optional;
 
 public interface MedicalRecordService {
-
 
     public Optional<MedicalRecord> getMedicalRecord(String firstName, String lastName);
 

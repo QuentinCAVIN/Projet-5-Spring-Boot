@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,26 +25,23 @@ public class PersonIT {
     private PersonRepository personRepository;
 
     private Person person;
-    private String firstName = "Garrus";
-    private String lastName = "Vakarian";
-    private String address = "5 grande rue";
-    private String city = "Palaven";
-    private int zip = 40100;
-    private String phone = "18-18";
-    private String email = "gvakarian@normandysr2.com";
-
-    // TODO : Ajuster les attributs et le BeforeEach de la classe, beaucoups de champs inutile
+    private String firstName;
+    private String lastName;
 
     @BeforeEach
-    public void setUpPerTest(){
+    public void setUpPerTest() {
+        firstName = "Garrus";
+        lastName = "Vakarian";
+
         person = new Person();
         person.setFirstName(firstName);
         person.setLastName(lastName);
-        person.setAddress(address);
-        person.setCity(city);
-        person.setZip(zip);
-        person.setPhone(phone);
-        person.setEmail(email);
+        person.setAddress("5 grande rue");
+        person.setCity("Palaven");
+        person.setZip(40100);
+        person.setPhone("18-18");
+        person.setEmail("gvakarian@normandysr2.com");
+
         personRepository.deleteAll();
     }
 
@@ -53,13 +51,16 @@ public class PersonIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}"))
                 .andExpect(status().isCreated());
+        assertThat(personRepository.findByFirstNameAndLastName(firstName,lastName).get().getFirstName()).isEqualTo(firstName);
+        assertThat(personRepository.findByFirstNameAndLastName(firstName,lastName).get().getLastName()).isEqualTo(lastName);
     }
 
     @Test
     public void updatePersonCreatedWithSuccess() throws Exception {
         createPersonWithSuccess();
+
         mockMvc.perform(put("/person")
-                        .param("firstName",firstName).param("lastName",lastName)
+                        .param("firstName", firstName).param("lastName", lastName)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"city\":\"Citadelle\"}"))
                 .andExpect((status().isOk()))
                 .andExpect(jsonPath("$.city").value("Citadelle"));
@@ -68,7 +69,8 @@ public class PersonIT {
     @Test
     public void deletePersonUpdatedWithSuccess() throws Exception {
         createPersonWithSuccess();
-        mockMvc.perform(delete("/person").param("firstName",firstName).param("lastName",lastName))
+
+        mockMvc.perform(delete("/person").param("firstName", firstName).param("lastName", lastName))
                 .andExpect((status().isNoContent()));
     }
 
@@ -84,8 +86,9 @@ public class PersonIT {
     @Test
     public void updatePersonWithAWrongFirstName() throws Exception {
         createPersonWithSuccess();
+
         mockMvc.perform(put("/person")
-                        .param("firstName",firstName).param("lastName","Wrong lastName")
+                        .param("firstName", firstName).param("lastName", "Wrong lastName")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"city\":\"Citadelle\"}"))
                 .andExpect((status().isNotFound()))
                 .andExpect(jsonPath("$.errorMessage")
@@ -95,9 +98,10 @@ public class PersonIT {
     @Test
     public void deletePersonUpdatedTwice() throws Exception {
         deletePersonUpdatedWithSuccess();
-        mockMvc.perform(delete("/person").param("firstName",firstName).param("lastName",lastName))
+
+        mockMvc.perform(delete("/person").param("firstName", firstName).param("lastName", lastName))
                 .andExpect((status().isNotFound()))
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Il n'y a pas de données associé à " + firstName + " " + lastName+"."));
+                        .value("Il n'y a pas de données associé à " + firstName + " " + lastName + "."));
     }
 }

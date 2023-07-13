@@ -17,7 +17,7 @@ public interface FireStationRepository extends CrudRepository<FireStation, Long>
 
     List<FireStation> findAll();
 
-     void deleteByAddress (String address);
+    void deleteByAddress(String address);
     //A partir du nom de la methode, JPA va créer l'implémentation de la methode tt seul
     //Attention aux fautes de frappe (True Story)
 }

@@ -1,4 +1,4 @@
-package com.safetynet.alerts;
+package com.safetynet.alerts.unittest.controller;
 
 import com.safetynet.alerts.controller.MedicalRecordController;
 import com.safetynet.alerts.controller.PersonController;
@@ -33,42 +33,35 @@ public class PersonControllerTest {
     @MockBean
     PersonService personService;
     @MockBean
-    LoadDataService loadDataService; // même problème que précédemment
+    LoadDataService loadDataService;
     private Person person;
-    private String firstName = "Garrus";
-    private String lastName = "Vakarian";
-    private String address = "5 grande rue";
+    private String firstName;
+    private String lastName;
 
-    private String city = "Palaven";
-
-    private int zip = 40100;
-
-    private String phone = "18-18";
-
-    private String email = "gvakarian@normandysr2.com";
-
-    // TODO : Ajuster les attributs et le BeforeEach de la classe, beaucoups de champs inutile
     @BeforeEach
-    public void setUpPerTest(){
+    public void setUpPerTest() {
+        firstName = "Garrus";
+        lastName = "Vakarian";
+
         person = new Person();
         person.setFirstName(firstName);
         person.setLastName(lastName);
-        person.setAddress(address);
-        person.setCity(city);
-        person.setZip(zip);
-        person.setPhone(phone);
-        person.setEmail(email);
+        person.setAddress("5 grande rue");
+        person.setCity("Palaven");
+        person.setZip(40100);
+        person.setPhone("18-18");
+        person.setEmail("gvakarian@normandysr2.com");
     }
 
     @Test
-    public void createPerson_returnCode201_whenPersonIsCreated() throws Exception{
+    public void createPerson_returnCode201_whenPersonIsCreated() throws Exception {
         mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}"))
                 .andExpect(status().isCreated());
     }
 
     @Test
-    public void createPerson_returnCode400_WhenLastNameIsMissing() throws Exception{
+    public void createPerson_returnCode400_WhenLastNameIsMissing() throws Exception {
         mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"firstName\":\"" + firstName + "\"}"))
                 .andExpect(status().isBadRequest())
@@ -77,22 +70,22 @@ public class PersonControllerTest {
     }
 
     @Test
-    public void createPerson_returnCode409_WhenAPersonAlreadyExist() throws Exception{
+    public void createPerson_returnCode409_WhenAPersonAlreadyExist() throws Exception {
+        when(personService.getPerson(firstName, lastName)).thenReturn(Optional.of(person));
 
-        when(personService.getPerson(firstName,lastName)).thenReturn(Optional.of(person));
         mockMvc.perform(post("/person").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"firstName\":\"" + firstName + "\",\"lastName\":\"" + lastName + "\"}"))
-                .andExpect(status().isConflict()) .andExpect(jsonPath("$.errorMessage")
-                        .value(firstName + " " + lastName +" est déjà enregistré: \""+ person +"\""));;
+                .andExpect(status().isConflict()).andExpect(jsonPath("$.errorMessage")
+                        .value(firstName + " " + lastName + " est déjà enregistré: \"" + person + "\""));
     }
 
     @Test
     public void updatePerson_returnCode200_whenAPersonIsModified() throws Exception {
-
-        when(personService.getPerson(firstName,lastName)).thenReturn(Optional.of(person));
+        when(personService.getPerson(firstName, lastName)).thenReturn(Optional.of(person));
         when(personService.savePerson(person)).thenReturn(person);
+
         mockMvc.perform(put("/person")
-                        .param("firstName",firstName).param("lastName",lastName)
+                        .param("firstName", firstName).param("lastName", lastName)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"city\":\"Citadelle\"}"))
                 .andExpect((status().isOk()))
                 .andExpect(jsonPath("$.city").value("Citadelle"));
@@ -100,8 +93,7 @@ public class PersonControllerTest {
 
     @Test
     public void updatePerson_returnCode400_whenFirstNameIsMissing() throws Exception {
-
-        mockMvc.perform(put("/person").param("lastName",lastName)
+        mockMvc.perform(put("/person").param("lastName", lastName)
                         .contentType(MediaType.APPLICATION_JSON).content("{\"city\":\"Citadelle\"}"))
                 .andExpect((status().isBadRequest()))
                 .andExpect(jsonPath("$.errorMessage")
@@ -110,10 +102,10 @@ public class PersonControllerTest {
 
     @Test
     public void updatePerson_returnCode404_whenAWrongLastNameIsEnter() throws Exception {
+        when(personService.getPerson(firstName, lastName)).thenReturn(Optional.of(person));
 
-        when(personService.getPerson(firstName,lastName)).thenReturn(Optional.of(person));
         mockMvc.perform(put("/person")
-                        .param("firstName",firstName).param("lastName","Wrong lastName")
+                        .param("firstName", firstName).param("lastName", "Wrong lastName")
                         .contentType(MediaType.APPLICATION_JSON).content("{\"city\":\"Citadelle\"}"))
                 .andExpect((status().isNotFound()))
                 .andExpect(jsonPath("$.errorMessage")
@@ -122,17 +114,19 @@ public class PersonControllerTest {
 
     @Test
     public void deletePerson_returnCode204_whenAPersonIsDelete() throws Exception {
-        when(personService.getPerson(firstName,lastName)).thenReturn(Optional.of(person));
-        mockMvc.perform(delete("/person").param("firstName",firstName).param("lastName",lastName))
+        when(personService.getPerson(firstName, lastName)).thenReturn(Optional.of(person));
+
+        mockMvc.perform(delete("/person").param("firstName", firstName).param("lastName", lastName))
                 .andExpect((status().isNoContent()));
     }
 
     @Test
     public void deletePerson_returnCode404_WhenThePersontoDeleteIsNotFound() throws Exception {
-        when(personService.getPerson(firstName,lastName)).thenReturn(Optional.of(person));
-        mockMvc.perform(delete("/person").param("firstName","first name not present").param("lastName",lastName))
+        when(personService.getPerson(firstName, lastName)).thenReturn(Optional.of(person));
+
+        mockMvc.perform(delete("/person").param("firstName", "first name not present").param("lastName", lastName))
                 .andExpect((status().isNotFound()))
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Il n'y a pas de données associé à first name not present "+ lastName+"."));
+                        .value("Il n'y a pas de données associé à first name not present " + lastName + "."));
     }
 }

@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Optional;
 
 @RestController
@@ -31,6 +32,7 @@ public class PersonController {
     private PersonService personService;
 
     private static final Logger logger = LoggerFactory.getLogger(PersonController.class);
+
     //● ajouter une nouvelle personne ;
     @PostMapping("/person")
     public ResponseEntity<Person> createPerson(@Valid @RequestBody Person person) {
@@ -38,7 +40,7 @@ public class PersonController {
 
         Optional<Person> personAlreadyPresent = personService.getPerson(person.getFirstName(), person.getLastName());
         if (personAlreadyPresent.isPresent()) {
-            throw new AlreadyPresentException(person.getFirstName() + " " + person.getLastName() +" est déjà enregistré: \""+ personAlreadyPresent.orElse(null) +"\"");
+            throw new AlreadyPresentException(person.getFirstName() + " " + person.getLastName() + " est déjà enregistré: \"" + personAlreadyPresent.orElse(null) + "\"");
         }
         Person personSaved = personService.savePerson(person);
         logger.info("L'objet {} à été créé", personSaved);
@@ -79,7 +81,7 @@ public class PersonController {
             // TODO voir si il serais mieux d'utiliser un for each pour vérifier que les attributs sont null
             // https://stackoverflow.com/questions/1038308/how-to-get-the-list-of-all-attributes-of-a-java-object-using-beanutils-introspec
             Person personSaved = personService.savePerson(currentPerson);
-            logger.info("L'objet à été modifié: " +  personSaved);
+            logger.info("L'objet à été modifié: " + personSaved);
             return ResponseEntity.status(HttpStatus.OK).body(personSaved);
         } else {
             throw new NotFoundException("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
@@ -92,13 +94,14 @@ public class PersonController {
     @DeleteMapping("/person")
     public ResponseEntity deletePerson(@RequestParam("firstName") final String firstName, @RequestParam("lastName") final String lastName) {
         logger.info("une requête Http DELETE à été reçue à l'url /person avec les paramètre {} {}.", firstName, lastName);
+
         Optional<Person> personAlreadyPresent = personService.getPerson(firstName, lastName);
         if (personAlreadyPresent.isPresent()) {
-            personService.deletePerson(firstName,lastName);
+            personService.deletePerson(firstName, lastName);
             logger.info("L'objet à été supprimé.");
             return ResponseEntity.noContent().build();
         } else {
-            throw new NotFoundException ("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
+            throw new NotFoundException("Il n'y a pas de données associé à " + firstName + " " + lastName + ".");
         }
     }
 }

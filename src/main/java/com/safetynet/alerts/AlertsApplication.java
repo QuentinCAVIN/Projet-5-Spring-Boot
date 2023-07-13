@@ -8,15 +8,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 public class AlertsApplication implements CommandLineRunner {
-	@Autowired
-	private LoadDataService loader;
+    @Autowired
+    private LoadDataService loader;
 
-	public static void main(String[] args) {
-		SpringApplication.run(AlertsApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(AlertsApplication.class, args);
+    }
 
-	@Override
-	public void run(String... args) throws Exception {
-		loader.loadData();
-	}
+    @Override
+    public void run(String... args) throws Exception {
+        loader.loadData();
+    }
 }

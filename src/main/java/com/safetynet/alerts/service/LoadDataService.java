@@ -45,9 +45,6 @@ public class LoadDataService {
             List<Person> persons = data.getPersons();
             personRepository.saveAll(persons);
 
-            //TODO Voir si il est pertinent (et possible) d'implémenter une interface
-            // InputDataRepository ou  qui regroupera les 3 autres (Fire,Medical,Person)
-
         } catch (IOException e) {
             e.printStackTrace();
         }

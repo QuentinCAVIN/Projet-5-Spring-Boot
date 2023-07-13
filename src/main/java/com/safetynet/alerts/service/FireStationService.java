@@ -17,5 +17,5 @@ public interface FireStationService {
 
     public List<String> getAddressesCoveredByStation(Integer station);
 
-    public List<String> getAddressesCoveredByStations(List<Integer>stations);
+    public List<String> getAddressesCoveredByStations(List<Integer> stations);
 }
