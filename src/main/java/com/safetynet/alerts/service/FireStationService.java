@@ -11,8 +11,6 @@ public interface FireStationService {
 
     public Iterable<FireStation> getFireStations();
 
-    public void deleteFireStation(final Long id);
-
     public void deleteFireStation(final String address);
 
     public FireStation saveFireStation(FireStation fireStation);

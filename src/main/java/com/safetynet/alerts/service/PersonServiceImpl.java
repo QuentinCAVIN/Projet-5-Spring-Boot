@@ -13,25 +13,13 @@ public class PersonServiceImpl implements PersonService{
     @Autowired
     private PersonRepository personRepository;
 
-    public Optional<Person> getPerson(final Long id) {
-        return personRepository.findById(id);
-    }
-
-    public Iterable<Person> getPersons() {
-        return personRepository.findAll();
-    }
-
-    public void deletePerson(final Long id) {
-        personRepository.deleteById(id);
+    public Optional<Person> getPerson (String firstName, String lastName){
+        return personRepository.findByFirstNameAndLastName(firstName,lastName);
     }
 
     public Person savePerson(Person person) {
         Person savedPerson = personRepository.save(person);
         return savedPerson;
-    }
-
-    public Optional<Person> getPerson (String firstName, String lastName){
-        return personRepository.findByFirstNameAndLastName(firstName,lastName);
     }
 
     public void deletePerson(String firstName,String lastName){
