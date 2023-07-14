@@ -33,6 +33,7 @@ public class MedicalRecordIT {
     @BeforeEach
     private void setUpPerTest() throws Exception {
         medicalRecordRepository.deleteAll();
+        medicalRecordRepository.loadData();
     }
 
     @Test

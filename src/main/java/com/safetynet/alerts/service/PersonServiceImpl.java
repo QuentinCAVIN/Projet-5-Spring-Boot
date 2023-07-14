@@ -1,5 +1,6 @@
 package com.safetynet.alerts.service;
 
+import com.safetynet.alerts.model.MedicalRecord;
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
 import lombok.Data;
@@ -26,4 +27,6 @@ public class PersonServiceImpl implements PersonService {
     public void deletePerson(String firstName, String lastName) {
         personRepository.deleteByFirstNameAndLastName(firstName, lastName);
     }
+
+
 }

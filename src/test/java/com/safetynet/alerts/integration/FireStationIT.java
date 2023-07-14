@@ -2,6 +2,7 @@ package com.safetynet.alerts.integration;
 
 import com.safetynet.alerts.repository.FireStationRepository;
 import com.safetynet.alerts.service.FireStationService;
+import com.safetynet.alerts.service.LoadDataService;
 import org.assertj.core.api.Assertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class FireStationIT {
     @Autowired
+    LoadDataService loadDataService;
+    @Autowired
     private MockMvc mockMvc;
     @Autowired
     private FireStationService fireStationService;
@@ -32,6 +35,7 @@ public class FireStationIT {
     @BeforeEach
     private void setUpPerTest() throws Exception {
         fireStationRepository.deleteAll();
+        loadDataService.loadData();
     }
 
     @Test

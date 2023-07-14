@@ -2,6 +2,7 @@ package com.safetynet.alerts.integration;
 
 import com.safetynet.alerts.model.Person;
 import com.safetynet.alerts.repository.PersonRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,11 @@ public class PersonIT {
         person.setEmail("gvakarian@normandysr2.com");
 
         personRepository.deleteAll();
+        personRepository.loadData();
     }
+
+
+
 
     @Test
     public void createPersonWithSuccess() throws Exception {
