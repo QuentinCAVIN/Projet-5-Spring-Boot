@@ -1,8 +1,13 @@
+
 # SafetyNet Alerts API
 
 ## Projet 5 OC : Société SafetyNet
 
 **SafetyNet Alerts** est une API développée avec Spring Boot, destinée à fournir des renseignements aux services de secours en cas de sinistre. Elle a pour but d’envoyer des informations vitales aux systèmes de services d’urgence lors de situations critiques telles que les incendies, les ouragans ou les inondations.
+
+
+  ![Diagramme de classe](https://github.com/QuentinCAVIN/Projet-5-Spring-Boot/assets/117484688/7a10e7ab-30f3-49b1-8e89-4e7eece34b0a)
+
 
 ## Objectif
 
@@ -31,6 +36,7 @@
 
 - Couverture des tests avec Jacoco : 95%
 - Diagramme de classe UML pour la modélisation
+
 
 
 
